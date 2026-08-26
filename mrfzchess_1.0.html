@@ -1,0 +1,1075 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="명일방주 위수 협의: 맹약 (명토체스) 조합 계산기">
+<title>명토체스 계산기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+
+<style>
+:root{
+  --bg:#EDF0F4; --panel:#FFFFFF; --panel2:#F5F7FA; --panel3:#E9EDF2;
+  --line:#D6DCE4; --line-strong:#B2BCC9;
+  --text:#131A23; --dim:#5A6675; --faint:#8894A3;
+  --core:#B4650A; --core-soft:#FDF0DC; --core-line:#E8B96B;
+  --aux:#0C7C79; --aux-soft:#DDF2F1; --aux-line:#78C9C5;
+  --ban:#B9242A; --ban-soft:#FAE2E3; --ban-line:#E29095;
+  --pick:#5B3FA8; --pick-soft:#EEE8FB; --pick-line:#B7A2E6;
+  --focus:#2563EB;
+  --shadow:0 1px 2px rgba(19,26,35,.06),0 8px 24px -12px rgba(19,26,35,.18);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C0F14; --panel:#141922; --panel2:#1A2029; --panel3:#212936;
+    --line:#252D3A; --line-strong:#3B4756;
+    --text:#E3E8EF; --dim:#8A96A6; --faint:#6B7787;
+    --core:#FFB528; --core-soft:#33260A; --core-line:#6B5115;
+    --aux:#4BD8D0; --aux-soft:#0A2E2C; --aux-line:#1C5D59;
+    --ban:#FF6167; --ban-soft:#341318; --ban-line:#6E2A2F;
+    --pick:#B69CFF; --pick-soft:#221A3A; --pick-line:#443166;
+    --focus:#7AA2FF;
+    --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 30px -14px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C0F14; --panel:#141922; --panel2:#1A2029; --panel3:#212936;
+  --line:#252D3A; --line-strong:#3B4756;
+  --text:#E3E8EF; --dim:#8A96A6; --faint:#6B7787;
+  --core:#FFB528; --core-soft:#33260A; --core-line:#6B5115;
+  --aux:#4BD8D0; --aux-soft:#0A2E2C; --aux-line:#1C5D59;
+  --ban:#FF6167; --ban-soft:#341318; --ban-line:#6E2A2F;
+  --pick:#B69CFF; --pick-soft:#221A3A; --pick-line:#443166;
+  --focus:#7AA2FF;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 30px -14px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font-family:"IBM Plex Sans KR",system-ui,-apple-system,"Malgun Gothic",sans-serif;
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:"IBM Plex Mono","IBM Plex Sans KR",monospace;font-variant-numeric:tabular-nums}
+.wrap{max-width:1400px;margin:0 auto;padding:0 20px 72px}
+
+header{border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:40}
+.hbar{max-width:1400px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:baseline;gap:10px;margin-right:auto}
+.brand b{font-family:"Chakra Petch",sans-serif;font-size:19px;font-weight:700;letter-spacing:.01em}
+.brand span{font-size:11.5px;color:var(--faint);letter-spacing:.06em;text-transform:uppercase}
+.seg{display:flex;border:1px solid var(--line-strong);background:var(--panel2);padding:2px;gap:2px}
+.seg button{font:inherit;font-size:13px;font-weight:600;color:var(--dim);background:none;border:0;padding:7px 15px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--text);color:var(--panel)}
+.seg button:focus-visible,.chip:focus-visible,.btn:focus-visible,.opcard:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.themeBtn{font:inherit;font-size:12px;color:var(--dim);background:none;border:1px solid var(--line);padding:6px 11px;cursor:pointer}
+.themeBtn:hover{border-color:var(--line-strong);color:var(--text)}
+
+.cols{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:20px;align-items:start;margin-top:20px}
+@media (max-width:960px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
+.panel + .panel{margin-top:14px}
+.ph{display:flex;align-items:center;gap:9px;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.ph h2{margin:0;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+.ph .count{margin-left:auto;font-size:12px;color:var(--faint)}
+.pb{padding:14px}
+
+.grp-label{display:flex;align-items:center;gap:8px;margin:0 0 9px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.grp-label .rule{flex:1;height:1px;background:var(--line)}
+.grp-label.core{color:var(--core)} .grp-label.aux{color:var(--aux)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{
+  font:inherit;font-size:13px;font-weight:500;cursor:pointer;text-align:left;
+  background:var(--panel2);color:var(--text);border:1px solid var(--line);border-left-width:3px;
+  padding:5px 10px 5px 9px;transition:background .12s,border-color .12s;
+}
+.chip.core{border-left-color:var(--core-line)} .chip.aux{border-left-color:var(--aux-line)}
+.chip:hover{border-color:var(--line-strong)}
+.chip[aria-pressed="true"]{background:var(--ban-soft);border-color:var(--ban-line);border-left-color:var(--ban);color:var(--ban);text-decoration:line-through;text-decoration-thickness:1.5px}
+.chip.nonban{cursor:default;opacity:.72;border-left-style:dotted;border-style:dashed}
+.chip .lock{font-size:10px;color:var(--faint);margin-left:6px;letter-spacing:.05em}
+.chip .thr{font-size:10.5px;color:var(--faint);margin-left:5px;font-family:"IBM Plex Mono",monospace}
+.chip[aria-pressed="true"] .thr{color:var(--ban);opacity:.7}
+
+.rowbtns{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.btn{font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;background:var(--panel2);border:1px solid var(--line-strong);color:var(--text);padding:7px 12px}
+.btn:hover{background:var(--panel3)}
+.btn.primary{background:var(--text);color:var(--panel);border-color:var(--text)}
+.btn.primary:hover{opacity:.88}
+.btn:disabled{opacity:.5;cursor:default}
+
+.opt{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.opt:last-child{border-bottom:0}
+.opt label{font-size:13px;color:var(--text);flex:1}
+.opt .hint{display:block;font-size:11.5px;color:var(--faint);line-height:1.35}
+.opt input[type=range]{width:110px;accent-color:var(--core)}
+.opt .val{font-size:12px;color:var(--dim);width:30px;text-align:right;font-family:"IBM Plex Mono",monospace}
+.opt select{font:inherit;font-size:12.5px;padding:5px 8px;background:var(--panel);color:var(--text);border:1px solid var(--line);max-width:150px}
+.pillset{display:flex;border:1px solid var(--line-strong);padding:2px;gap:2px}
+.pillset button{font:inherit;font-size:12px;font-weight:600;border:0;background:none;color:var(--dim);padding:4px 11px;cursor:pointer}
+.pillset button[aria-pressed="true"]{background:var(--text);color:var(--panel)}
+
+.oplist{display:flex;flex-wrap:wrap;gap:5px}
+.optag{font-size:12px;padding:3px 8px;border:1px solid var(--line);background:var(--panel2);display:inline-flex;align-items:center;gap:6px}
+.optag.dead{border-color:var(--ban-line);background:var(--ban-soft);color:var(--ban);text-decoration:line-through}
+.optag .g{font-size:10px;font-family:"Chakra Petch",sans-serif;font-weight:700;color:var(--faint)}
+.empty{color:var(--faint);font-size:13px;padding:6px 0;margin:0}
+
+/* 선발 슬롯 */
+.pickslots{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pslot{
+  border:1px dashed var(--line-strong);color:var(--faint);font-size:12px;padding:7px 9px;
+  display:flex;align-items:center;gap:7px;min-height:40px;
+}
+.pslot .tier{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:10.5px;color:var(--pick);letter-spacing:.05em}
+.pslot.filled{border-style:solid;border-color:var(--pick-line);background:var(--pick-soft);color:var(--text);cursor:pointer}
+.pslot.filled:hover{border-color:var(--ban);color:var(--ban)}
+.picklist{max-height:260px;overflow-y:auto;margin-top:10px;border:1px solid var(--line);background:var(--panel2)}
+.pickrow{
+  border-bottom:1px solid var(--line);padding:5px 8px 5px 10px;
+  display:flex;align-items:center;gap:8px;color:var(--text);font-size:12.5px;
+}
+.pickrow:hover{background:var(--panel3)}
+.pickrow.on{background:var(--pick-soft)}
+.pickrow.on .pn{color:var(--pick);font-weight:600}
+.pickrow .pn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:44%}
+.pickrow .tg{font-size:11px;color:var(--faint);margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tierbtns{display:flex;gap:4px;flex:none;align-items:center}
+.tbtn{
+  font:inherit;font-size:11px;font-weight:600;cursor:pointer;padding:3px 7px;
+  background:var(--panel);color:var(--dim);border:1px solid var(--line-strong);
+}
+.tbtn:hover:not(:disabled){border-color:var(--pick);color:var(--pick)}
+.tbtn:disabled{opacity:.35;cursor:default}
+.tbtn.rm{border-color:var(--ban-line);color:var(--ban)}
+.tiernow{font-family:"Chakra Petch",sans-serif;font-size:10.5px;font-weight:700;color:var(--pick);letter-spacing:.04em}
+.chk{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;font-weight:700;cursor:pointer}
+.chk input{accent-color:var(--core)}
+.apexflag{
+  font-family:"Chakra Petch",sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.06em;
+  color:var(--core);border:1px solid var(--core-line);background:var(--core-soft);padding:1px 7px;
+}
+.badge.apex{box-shadow:inset 0 0 0 1px var(--core-line);font-weight:700}
+.badge.apex .lv{opacity:1}
+
+.reco{border:1px solid var(--core-line);background:var(--core-soft);
+  clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px))}
+.reco .ph{background:transparent;border-bottom:1px solid var(--core-line)}
+.reco .ph h2{color:var(--core)}
+.deckcard{padding:14px;border-bottom:1px solid var(--line)}
+.deckcard:last-child{border-bottom:0}
+.deckcard.on{background:var(--panel2)}
+.dhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:9px}
+.rank{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:12px;color:var(--faint);border:1px solid var(--line);padding:1px 7px}
+.score{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:21px;line-height:1;color:var(--core)}
+.score small{font-size:11px;font-weight:600;color:var(--faint);margin-left:4px;letter-spacing:.06em}
+.dsum{margin-left:auto;font-size:12px;color:var(--dim)}
+
+.syn{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:3px 9px;border:1px solid transparent}
+.badge.core{background:var(--core-soft);border-color:var(--core-line);color:var(--core)}
+.badge.aux{background:var(--aux-soft);border-color:var(--aux-line);color:var(--aux)}
+.badge .lv{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:11px;border-left:1px solid currentColor;padding-left:6px;opacity:.85}
+.badge .n{font-family:"IBM Plex Mono",monospace;font-size:11px;opacity:.75}
+.badge.banned{opacity:.75;border-style:dashed}
+
+.roster{display:flex;flex-wrap:wrap;gap:5px}
+.rop{font-size:12.5px;padding:3px 9px;background:var(--panel2);border:1px solid var(--line);display:inline-flex;align-items:center;gap:7px}
+.rop.ispick{border-color:var(--pick-line);background:var(--pick-soft)}
+.rop .g{font-family:"Chakra Petch",sans-serif;font-size:10px;font-weight:700;color:var(--faint)}
+.rop .tg{font-size:10.5px;color:var(--faint)}
+
+.stats{display:flex;gap:18px;flex-wrap:wrap;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
+.stat{display:flex;flex-direction:column;gap:1px}
+.stat .k{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:700}
+.stat .v{font-family:"Chakra Petch",sans-serif;font-size:17px;font-weight:700;line-height:1.2}
+
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line)}
+.filters select,.filters input[type=search]{font:inherit;font-size:12.5px;padding:5px 8px;background:var(--panel);color:var(--text);border:1px solid var(--line)}
+.filters label{font-size:11.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;font-weight:700}
+
+.slots{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--panel2);min-height:56px;align-items:center}
+.slot{min-width:96px;border:1px dashed var(--line-strong);color:var(--faint);font-size:12px;padding:6px 9px;text-align:center}
+.slot.filled{border-style:solid;border-color:var(--line-strong);background:var(--panel);color:var(--text);cursor:pointer;text-align:left;display:flex;align-items:center;gap:7px}
+.slot.filled:hover{border-color:var(--ban);color:var(--ban)}
+.opgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:6px;padding:14px;max-height:720px;overflow-y:auto}
+.opcard{font:inherit;text-align:left;cursor:pointer;background:var(--panel2);border:1px solid var(--line);border-left-width:3px;padding:7px 9px;display:flex;flex-direction:column;gap:2px;color:var(--text)}
+.opcard:hover{border-color:var(--line-strong)}
+.opcard[aria-pressed="true"]{background:var(--panel3);border-color:var(--text);border-left-color:var(--text)}
+.opcard.banned{opacity:.42;cursor:not-allowed;border-left-color:var(--ban)}
+.opcard .nm{font-size:12.5px;font-weight:600;display:flex;align-items:baseline;gap:6px}
+.opcard .nm .g{font-family:"Chakra Petch",sans-serif;font-size:10px;color:var(--faint);font-weight:700}
+.opcard .nm .c{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--faint)}
+.opcard .tags{font-size:11px;color:var(--faint);line-height:1.3}
+
+.prog{height:3px;background:var(--line);position:relative;overflow:hidden}
+.prog i{display:block;height:100%;background:currentColor}
+.actrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)}
+.actrow:last-child{border-bottom:0}
+.actrow .nm{font-size:13.5px;font-weight:600;min-width:78px}
+.actrow.core .nm{color:var(--core)} .actrow.aux .nm{color:var(--aux)}
+.actrow .cnt{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--dim);min-width:52px}
+.actrow .bar{flex:1;min-width:60px}
+.actrow .lvl{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:12px;min-width:44px;text-align:right}
+.actrow.off{opacity:.5}
+.actrow.off .lvl{color:var(--faint)}
+.cond{
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 20px;
+  padding:12px 14px;border-bottom:1px solid var(--line);background:var(--panel2);
+}
+.cf{display:flex;flex-direction:column;gap:5px}
+.ck{
+  font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--faint);white-space:nowrap;
+}
+.cr{display:flex;align-items:center;gap:7px}
+.cond input[type=range]{width:104px;accent-color:var(--core)}
+.cond .val{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--dim);width:26px;text-align:right}
+.cond select{
+  font:inherit;font-size:12.5px;padding:5px 8px;background:var(--panel);color:var(--text);
+  border:1px solid var(--line);max-width:150px;
+}
+.condnote{margin:0 0 2px auto;font-size:11.5px;color:var(--faint);align-self:flex-end}
+.condnote b{color:var(--dim)}
+@media (max-width:640px){
+  .cond{gap:12px 16px}
+  .cond input[type=range]{width:88px}
+  .condnote{margin-left:0;flex-basis:100%}
+}
+.pager{
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:12px 14px;border-top:1px solid var(--line);background:var(--panel2);
+}
+.pager:empty{display:none}
+.pinfo{font-size:11.5px;color:var(--faint);letter-spacing:.02em}
+.pnav{display:flex;gap:4px;flex-wrap:wrap;margin:0 auto}
+.pbtn{
+  font-family:"Chakra Petch","IBM Plex Sans KR",sans-serif;font-size:13px;font-weight:600;
+  min-width:32px;padding:5px 8px;cursor:pointer;
+  background:var(--panel);color:var(--dim);border:1px solid var(--line);
+}
+.pbtn:hover:not(:disabled):not(.on){border-color:var(--line-strong);color:var(--text)}
+.pbtn.on{background:var(--text);color:var(--panel);border-color:var(--text);cursor:default}
+.pbtn:disabled{opacity:.35;cursor:default}
+.pbtn:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.pbtn.arrow{font-size:15px;line-height:1;padding:4px 9px}
+.pgap{color:var(--faint);padding:5px 2px;font-size:13px}
+.hidden{display:none!important}
+details.eff{margin-top:10px;font-size:12.5px;color:var(--dim)}
+details.eff summary{cursor:pointer;color:var(--faint);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+details.eff .row{padding:7px 0;border-bottom:1px solid var(--line);white-space:pre-line;line-height:1.5}
+details.eff .row:last-child{border-bottom:0}
+details.eff .row b{display:block;margin-bottom:2px}
+footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;color:var(--faint);display:flex;gap:14px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="hbar">
+    <div class="brand"><b>명토체스 계산기</b><span id="seasonLabel"></span></div>
+    <div class="seg" role="group" aria-label="모드 선택">
+      <button id="mode-ban" aria-pressed="true">밴 → 조합 추천</button>
+      <button id="mode-build" aria-pressed="false">덱 → 맹약 확인</button>
+    </div>
+    <button class="themeBtn" id="themeBtn">테마</button>
+  </div>
+</header>
+
+<div class="wrap">
+
+<div id="viewBan">
+  <div class="cols">
+    <div>
+      <section class="panel">
+        <div class="ph"><h2>밴 지정</h2><span class="count" id="banCount">0 / 7</span></div>
+        <div class="pb">
+          <p class="grp-label core"><span>핵심 맹약</span><span class="rule"></span><span class="mono" id="banCoreN"></span></p>
+          <div class="chips" id="coreChips"></div>
+          <p class="grp-label aux" style="margin-top:16px"><span>부가 맹약</span><span class="rule"></span><span class="mono" id="banAuxN"></span></p>
+          <div class="chips" id="auxChips"></div>
+          <div class="rowbtns">
+            <button class="btn" id="randomBan">랜덤 밴 뽑기</button>
+            <button class="btn" id="clearBan">초기화</button>
+          </div>
+          <p class="empty" style="margin-top:10px;line-height:1.45">밴된 맹약도 인원만 채우면 발동합니다. 가진 맹약이 <b>전부</b> 밴 목록에 들어간 오퍼레이터만 사용 불가가 됩니다.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="ph"><h2>선발 오퍼레이터</h2><span class="count" id="pickCount">0 / 4</span></div>
+        <div class="pb">
+          <div class="pickslots" id="pickSlots"></div>
+          <input type="search" id="pickSearch" placeholder="선발 오퍼레이터 검색" style="width:100%;margin-top:10px;font:inherit;font-size:12.5px;padding:6px 9px;background:var(--panel);color:var(--text);border:1px solid var(--line)">
+          <div class="picklist" id="pickList"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="ph"><h2>밴된 오퍼레이터</h2><span class="count" id="deadCount">0명</span></div>
+        <div class="pb"><div class="oplist" id="deadOps"></div><p class="empty" id="deadHint">아직 밴된 오퍼레이터가 없습니다.</p></div>
+      </section>
+
+    </div>
+
+    <div>
+      <section class="panel">
+        <div class="stats">
+          <div class="stat"><span class="k">사용 가능</span><span class="v mono" id="stAvail">–</span></div>
+          <div class="stat"><span class="k">발동 패턴</span><span class="v mono" id="stPatterns">–</span></div>
+          <div class="stat"><span class="k">탐색한 덱</span><span class="v mono" id="stSearched">–</span></div>
+          <div class="stat"><span class="k">소요</span><span class="v mono" id="stTime">–</span></div>
+        </div>
+        <div class="filters">
+          <label for="fCore">핵심</label><select id="fCore"></select>
+          <label for="fAux">부가</label><select id="fAux"></select>
+          <label for="fMin">최소 발동</label>
+          <select id="fMin"><option value="0">전체</option><option value="4">4개+</option><option value="5">5개+</option><option value="6">6개+</option><option value="7">7개+</option></select>
+          <label class="chk"><input type="checkbox" id="fApex"> 핵심 MAX 달성만</label>
+          <label for="perPage">쪽당</label>
+          <select id="perPage"><option value="10">10개</option><option value="20" selected>20개</option><option value="50">50개</option></select>
+          <button class="btn primary" id="runBtn" style="margin-left:auto">조합 계산</button>
+        </div>
+        <div class="cond" role="group" aria-label="편성 조건">
+          <div class="cf">
+            <span class="ck">덱 인원</span>
+            <div class="pillset" role="group" aria-label="덱 인원" title="인사부 파일 사용 시 9명">
+              <button id="k8" aria-pressed="true">8</button><button id="k9" aria-pressed="false">9</button>
+            </div>
+          </div>
+          <div class="cf" title="핵심 맹약 하나를 최종 단계까지 올린 조합에 주는 보너스. 0이면 발동 개수 위주로 추천합니다.">
+            <label class="ck" for="wApex">핵심 MAX 가산점</label>
+            <div class="cr"><input type="range" id="wApex" min="0" max="12" step="0.5" value="5"><span class="val" id="wApexV">5.0</span></div>
+          </div>
+          <div class="cf" title="높일수록 진영 맹약을 깊게 미는 조합을 추천합니다.">
+            <label class="ck" for="wCore">핵심 가중치</label>
+            <div class="cr"><input type="range" id="wCore" min="0.5" max="3" step="0.1" value="1.6"><span class="val" id="wCoreV">1.6</span></div>
+          </div>
+          <div class="cf" title="높일수록 부가 맹약을 많이 켜는 조합을 추천합니다.">
+            <label class="ck" for="wAux">부가 가중치</label>
+            <div class="cr"><input type="range" id="wAux" min="0.5" max="3" step="0.1" value="1.0"><span class="val" id="wAuxV">1.0</span></div>
+          </div>
+          <div class="cf" title="이 맹약을 축으로 삼는 조합을 위로 올립니다.">
+            <label class="ck" for="favSel">우선 맹약</label>
+            <select id="favSel"></select>
+          </div>
+          <div class="cf" title="지정 가능한 14개 맹약 중 하나의 중첩 수를 +1 합니다.">
+            <label class="ck" for="bonusSel">변형구조체</label>
+            <select id="bonusSel"></select>
+          </div>
+          <p class="condnote">값을 바꾼 뒤 <b>조합 계산</b>을 다시 눌러야 반영됩니다.</p>
+        </div>
+        <div id="recoWrap"></div>
+        <div id="resultList"></div>
+        <div class="pager" id="pager"></div>
+      </section>
+      <p style="font-size:12px;color:var(--faint);margin:10px 2px 0;line-height:1.5">
+        같은 <b>맹약 발동 패턴</b>을 만드는 덱은 하나로 묶어 최고 점수 조합만 표시합니다.
+        조화(뮤엘시스)는 전장의 핵심 맹약 중첩 수 +1로, 독행은 1명일 때만 발동하도록 계산에 반영돼 있습니다.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div id="viewBuild" class="hidden">
+  <div class="cols">
+    <div>
+      <section class="panel">
+        <div class="ph"><h2>발동 맹약</h2><span class="count" id="buildActiveN">0개</span></div>
+        <div class="pb" id="buildSyn"><p class="empty">오퍼레이터를 골라주세요.</p></div>
+      </section>
+      <section class="panel">
+        <div class="ph"><h2>밴 반영</h2></div>
+        <div class="pb">
+          <p class="empty" style="margin-bottom:9px">밴 탭에서 지정한 맹약이 여기에도 적용됩니다.</p>
+          <div class="chips" id="buildBanEcho"></div>
+        </div>
+      </section>
+    </div>
+    <div>
+      <section class="panel">
+        <div class="ph"><h2>내 덱</h2><span class="count" id="slotCount">0 / 8</span></div>
+        <div class="slots" id="slots"></div>
+        <div class="filters">
+          <input type="search" id="opSearch" placeholder="오퍼레이터 검색" style="flex:1;min-width:130px">
+          <label for="fGrade">티어</label>
+          <select id="fGrade"><option value="">전체</option><option value="6">VI</option><option value="5">V</option><option value="4">IV</option><option value="3">III</option><option value="2">II</option><option value="1">I</option><option value="P">선발</option></select>
+          <label for="fTag">맹약</label><select id="fTag"></select>
+          <button class="btn" id="clearDeck">덱 비우기</button>
+        </div>
+        <div class="opgrid" id="opGrid"></div>
+      </section>
+    </div>
+  </div>
+</div>
+
+<footer><span>명일방주 「위수 협의: 맹약」 비공식 팬 도구</span><span id="footData"></span></footer>
+</div>
+
+<script>
+"use strict";
+const DATA = {"season": "시즌2 상반기", "covenants": [{"id": "C01", "name": "염국", "type": "core", "tiers": [3, 6, 9], "desc": "[염국] 오퍼레이터의 공격력 증가 (3)\n'염의 가호' 소환 (6)\n'염의 가호'의 공격력 1.5배, 받는 데미지 -90%, 2개 소환  (9)"}, {"id": "C02", "name": "사르곤", "type": "core", "tiers": [3, 6], "desc": "[사르곤] 오퍼레이터가 스킬 발동 시 모든 [사르곤] 오퍼레이터의 공격 속도 증가 (3)\n스킬 발동 시 동일한 지속 시간 동안 모든 [사르곤] 오퍼레이터의 공격력 증가 (6)"}, {"id": "C03", "name": "빅토리아", "type": "core", "tiers": [3, 6], "desc": "장비를 장착한 [빅토리아] 오퍼레이터가 입히는 데미지 증가 / <중첩 수 25회당> 랜덤 효과의 빅토리아 해머 1개 획득 (3)\n장비를 장착한 [빅토리아] 오퍼레이터의 공격력 증가, 승급 장비일 경우 추가로 증가 (6)"}, {"id": "C04", "name": "쉐라그", "type": "core", "tiers": [3, 6], "desc": "[쉐라그] 오퍼레이터가 입히는 대미지 증가, 냉기 및 빙결 상태의 적에게 추가로 증가 (3)\n25초마다 전장에 찬바람이 불어 적에게 일정 시간 냉기 효과 부여 (6)"}, {"id": "C05", "name": "라테라노", "type": "core", "tiers": [3, 6], "desc": "[라테라노] 오퍼레이터가 스킬 발동 시 획득하는 탄약 증가 (3)\n[라테라노] 오퍼레이터가 소모하는 탄약 1발당 모든 [라테라노] 오퍼레이터의 공격력 증가 (6)"}, {"id": "C06", "name": "에기르", "type": "core", "tiers": [3, 5], "desc": "[에기르] 오퍼레이터의 HP 증가. 전투 시작 후, [에기르] 오퍼레이터가 전방 1칸의 오퍼레이터를 포식해 5000의 물리 데미지를 입히고, 상대의 기본 공격력과 저지 가능 수 획득, 포식당한 오퍼레이터의 티어만큼 [에기르]의 맹약 중첩 수 증가 (3)\n최초로 쓰러진 [에기르] 오퍼레이터 3명 즉시 부활 (5)"}, {"id": "C07", "name": "시라쿠사", "type": "core", "tiers": [3, 6], "desc": "[시라쿠사] 오퍼레이터가 배치 후 공격 속도 증가, 일정 시간 지속 (3)\n[시라쿠사] 오퍼레이터가 배치 후 같은 시간 동안 은신 효과 획득, [시라쿠사] 오퍼레이터가 은신 효과 획득 또는 해제 후 10초간 3% 확률로 적에게 일정량의 트루 데미지를 입히며, 3초간 공포 효과 부여 (6)"}, {"id": "C08", "name": "카시미어", "type": "core", "tiers": [3, 6], "desc": "오퍼레이터를 배치할 때마다 [카시미어] 오퍼레이터의 공격력 +20% (3)\n[카시미어] 오퍼레이터가 적 저지 시 2초마다 주변 적에게 공격력의 120%에 해당하는 트루 대미지를 입히고 0.1초간 기절시킴, 적 미저지 시 공격력의 30%에 해당하는 트루 대미지를 입힘 (6)"}, {"id": "A01", "name": "정밀", "type": "aux", "tiers": [2, 3], "desc": "[정밀] 오퍼레이터의 공격력 증가 (2)\n모든 [정밀] 및 원거리 오퍼레이터에게 효과 적용, 공격이 일정량의 방어력 및 마법 저항 무시 (3)"}, {"id": "A02", "name": "신속", "type": "aux", "tiers": [2], "desc": "[신속] 오퍼레이터가 스킬 종료 시 일정 확률로 SP +12. <중첩 수 40회 달성> 모든 오퍼레이터가 스킬 종료 시 같은 확률로 추가로 SP +15 (2)"}, {"id": "A03", "name": "기민", "type": "aux", "tiers": [2], "desc": "[기민] 자신 및 주변 4칸 오퍼레이터의 공격 속도 증가. <중첩 수 40회 달성> 범위가 [기민] 오퍼레이터 주변 8칸으로 변경 (2)"}, {"id": "A04", "name": "아케인", "type": "aux", "tiers": [2, 3], "desc": "[아케인] 오퍼레이터가 마법 대미지를 입힐 경우 목표가 받는 마법 대미지 증가 (2)\n[아케인] 오퍼레이터가 HP 50% 미만인 적에게 입히는 대미지 비율이 증가 (3)"}, {"id": "A05", "name": "고수", "type": "aux", "tiers": [2, 3], "desc": "모든 오퍼레이터의 HP 증가 (2)\n[고수]가 아닌 오퍼레이터가 받는 대미지의 40%를 모든 [고수] 오퍼레이터가 분담. [고수] 오퍼레이터가 대미지를 받을 시 대미지를 입힌 적에게 일정량의 마법 대미지를 입히고 5초간 40%의 취약 효과 부여 (3)"}, {"id": "A06", "name": "조력", "type": "aux", "tiers": [2, 3], "desc": "모든 오퍼레이터의 방어력 증가, 재배치 시간 감소. 휴식 기간 종류 후 활성화된 모든 맹약의 중첩 수 +2 (2)\n중첩 수 증가량이 +4로 변경 (3)"}, {"id": "A07", "name": "예견", "type": "aux", "tiers": [2], "desc": "<중첩 수 10회당> 자금 2 획득. <최초로 80회 중첩> 모든 [예견] 오퍼레이터의 구매 가격 영구 -1. <최초로 150회 중첩> 상기 효과가 보급센터 내 모든 오퍼레이터의 구매 가격 영구 -1로 변경 (정비 구역의 [예견] 오퍼레이터도 맹약 활성화 가능) (2)"}, {"id": "A08", "name": "기적", "type": "aux", "tiers": [2], "desc": "보급센터를 갱신할 시 일정 확률로 다음 갱신이 무료. <중첩 수 100회당> 자금 20획득 (정비 구역의 [기적] 오퍼레이터도 맹약 활성화 가능) (2)"}, {"id": "A09", "name": "투자자", "type": "aux", "tiers": [3], "desc": "오퍼레이터의 '획득 시' 특질이 매번 2회 발동. <중첩 수 100회 달성> '획득 시' 특질이 매번 3회 발동 (정비 구역의 [투자자] 오퍼레이터도 맹약 활성화 가능) (3)"}, {"id": "A10", "name": "기습", "type": "aux", "tiers": [2], "desc": "[기습] 오퍼레이터가 10초간 공격하지 않거나 스킬이 준비될 경우, 공격 범위에 적이 없으면 SP를 보류하고 즉시 지상 적 1명에게 이동, 해당 기간 동안 공격력 및 HP 증가. <중첩 수 50회 달성> 모든 오퍼레이터의 공격 속도 +50 (2)"}, {"id": "A11", "name": "불굴", "type": "aux", "tiers": [2, 3], "desc": "지상 오퍼레이터가 쓰러질 경우 일정 확률로 즉시 부활 (2)\n지상 오퍼레이터가 쓰러질 경우 모든 오퍼레이터의 SP +5 (3)"}, {"id": "A12", "name": "조화", "type": "aux", "tiers": [1], "desc": "활성화 시 전장에 있는 핵심 맹약의 활성화 인원 수 +1, [조화] 오퍼레이터는 상기 활성화된 핵심 맹약의 효과 획득 (1)"}, {"id": "A13", "name": "협동방어", "type": "aux", "tiers": [2], "desc": "모든 오퍼레이터가 받는 물리 및 마법 대미지 -20%, [협동방어] 오퍼레이터가 입히는 대미지가 120%로 증가, 정예화 상태인 [협동방어] 오퍼레이터의 경우 입히는 대미지가 140%로 증가 (2)"}, {"id": "A14", "name": "독행", "type": "aux", "tiers": [1], "desc": "[독행] 오퍼레이터의 공격력 및 HP +60%, 초기 sp +15 ([독행] 오퍼레이터 2명 이상 배치 시 무효) (1)"}, {"id": "A15", "name": "궁극기", "type": "aux", "tiers": [2, 5], "desc": "정예화 오퍼레이터의 공격력 +30% (2)\n정예화 오퍼레이터의 SP 소모 -30% (5)"}], "operators": [{"name": "인사이더", "grade": 1, "cost": 12, "tags": ["라테라노", "신속"]}, {"name": "레이즈", "grade": 1, "cost": 32, "tags": ["염국"]}, {"name": "벤델라", "grade": 1, "cost": 16, "tags": ["빅토리아", "조력"]}, {"name": "텍사스", "grade": 1, "cost": 12, "tags": ["시라쿠사", "독행"]}, {"name": "굼", "grade": 1, "cost": 18, "tags": ["고수"]}, {"name": "포덴코", "grade": 1, "cost": 12, "tags": ["조력"]}, {"name": "인디고", "grade": 1, "cost": 21, "tags": ["정밀", "아케인"]}, {"name": "와일드메인", "grade": 1, "cost": 11, "tags": ["카시미어", "신속"]}, {"name": "마터호른", "grade": 1, "cost": 19, "tags": ["쉐라그", "고수"]}, {"name": "언더플로우", "grade": 1, "cost": 22, "tags": ["에기르"]}, {"name": "프로방스", "grade": 1, "cost": 18, "tags": ["시라쿠사"]}, {"name": "케이퍼", "grade": 1, "cost": 14, "tags": ["정밀"]}, {"name": "에스텔", "grade": 1, "cost": 20, "tags": ["사르곤"]}, {"name": "그레이", "grade": 1, "cost": 22, "tags": ["기민"]}, {"name": "우타게", "grade": 1, "cost": 22, "tags": ["기습"]}, {"name": "리스캄", "grade": 1, "cost": 21, "tags": ["불굴"]}, {"name": "이그제큐터", "grade": 2, "cost": 30, "tags": ["라테라노", "정밀"]}, {"name": "그레인버즈", "grade": 2, "cost": 13, "tags": ["염국", "기민"]}, {"name": "파피루스", "grade": 2, "cost": 17, "tags": ["사르곤"]}, {"name": "버블", "grade": 2, "cost": 19, "tags": ["사르곤", "고수"]}, {"name": "락락", "grade": 2, "cost": 19, "tags": ["빅토리아", "아케인"]}, {"name": "그라벨", "grade": 2, "cost": 6, "tags": ["카시미어", "불굴"]}, {"name": "퍼퓨머", "grade": 2, "cost": 14, "tags": ["조력", "협동방어"]}, {"name": "베토치키", "grade": 2, "cost": 35, "tags": ["고수", "독행"]}, {"name": "틴맨", "grade": 2, "cost": 16, "tags": ["신속", "투자자"]}, {"name": "사일런스", "grade": 2, "cost": 17, "tags": ["예견"]}, {"name": "해럴드", "grade": 2, "cost": 14, "tags": ["빅토리아", "쉐라그"]}, {"name": "스펙터", "grade": 2, "cost": 22, "tags": ["에기르"]}, {"name": "휴머스", "grade": 2, "cost": 19, "tags": ["기습"]}, {"name": "카제마루", "grade": 2, "cost": 13, "tags": ["기적"]}, {"name": "티피", "grade": 2, "cost": 16, "tags": ["신속", "기민"]}, {"name": "라플란드", "grade": 2, "cost": 18, "tags": ["시라쿠사"]}, {"name": "애쉬락", "grade": 2, "cost": 27, "tags": ["카시미어", "고수"]}, {"name": "엑시아", "grade": 3, "cost": 14, "tags": ["라테라노", "기적"]}, {"name": "스와이어", "grade": 3, "cost": 14, "tags": ["염국", "예견"]}, {"name": "스카디", "grade": 3, "cost": 19, "tags": ["에기르", "고수", "기습"]}, {"name": "민트", "grade": 3, "cost": 22, "tags": ["빅토리아"]}, {"name": "파인콘", "grade": 3, "cost": 28, "tags": ["신속", "협동방어"]}, {"name": "블레미샤인", "grade": 3, "cost": 21, "tags": ["카시미어", "기습"]}, {"name": "프라마닉스", "grade": 3, "cost": 12, "tags": ["쉐라그", "예견"]}, {"name": "메테오", "grade": 3, "cost": 10, "tags": ["카시미어", "독행"]}, {"name": "비질", "grade": 3, "cost": 14, "tags": ["시라쿠사", "기적"]}, {"name": "아르케토", "grade": 3, "cost": 13, "tags": ["라테라노", "기민"]}, {"name": "에이어스카르페", "grade": 3, "cost": 18, "tags": ["기민"]}, {"name": "스와이어 디 엘리건트 위트", "grade": 3, "cost": 7, "tags": ["염국", "투자자"]}, {"name": "필라에", "grade": 3, "cost": 25, "tags": ["사르곤"]}, {"name": "루실라", "grade": 3, "cost": 10, "tags": ["에기르", "아케인"]}, {"name": "스노우헌터", "grade": 3, "cost": 17, "tags": ["쉐라그", "정밀"]}, {"name": "미니멀리스트", "grade": 3, "cost": 20, "tags": ["사르곤", "기민"]}, {"name": "쿠오라", "grade": 3, "cost": 19, "tags": ["고수", "불굴"]}, {"name": "불피스폴리아", "grade": 3, "cost": 13, "tags": ["시라쿠사", "신속"]}, {"name": "쉐라", "grade": 3, "cost": 20, "tags": ["쉐라그", "조력"]}, {"name": "산크타 믹사파라토", "grade": 4, "cost": 22, "tags": ["라테라노", "고수"]}, {"name": "이네스", "grade": 4, "cost": 10, "tags": ["예견", "기습"]}, {"name": "백파이프", "grade": 4, "cost": 11, "tags": ["빅토리아", "예견", "불굴"]}, {"name": "아로마", "grade": 4, "cost": 32, "tags": ["시라쿠사", "아케인"]}, {"name": "글래디아", "grade": 4, "cost": 13, "tags": ["에기르"]}, {"name": "레온하르트", "grade": 4, "cost": 33, "tags": ["정밀", "신속"]}, {"name": "호시구마", "grade": 4, "cost": 22, "tags": ["염국"]}, {"name": "플레임테일", "grade": 4, "cost": 13, "tags": ["카시미어"]}, {"name": "프틸롭시스", "grade": 4, "cost": 15, "tags": ["기민", "조력"]}, {"name": "가비알 디 인빈서블", "grade": 4, "cost": 24, "tags": ["사르곤"]}, {"name": "시빌라이트 에테르나", "grade": 4, "cost": 8, "tags": ["협동방어"]}, {"name": "모스티마", "grade": 4, "cost": 26, "tags": ["라테라노", "아케인"]}, {"name": "크루스 더 킨 글린트", "grade": 4, "cost": 12, "tags": ["정밀"]}, {"name": "미즈키", "grade": 4, "cost": 20, "tags": ["에기르", "독행"]}, {"name": "캐서린", "grade": 4, "cost": 17, "tags": ["빅토리아", "기민"]}, {"name": "노시스", "grade": 4, "cost": 12, "tags": ["쉐라그", "기민"]}, {"name": "텍사스 디 오메르토사", "grade": 4, "cost": 8, "tags": ["시라쿠사", "기습"]}, {"name": "머드락", "grade": 4, "cost": 35, "tags": ["독행"]}, {"name": "파투스", "grade": 4, "cost": 22, "tags": ["카시미어", "정밀"]}, {"name": "실버애쉬", "grade": 4, "cost": 19, "tags": ["쉐라그"]}, {"name": "카넬리안", "grade": 4, "cost": 24, "tags": ["사르곤", "조력"]}, {"name": "와파린", "grade": 4, "cost": 18, "tags": ["기적"]}, {"name": "님프", "grade": 5, "cost": 21, "tags": ["신속"]}, {"name": "티티", "grade": 5, "cost": 17, "tags": ["사르곤", "정밀"]}, {"name": "울피아누스", "grade": 5, "cost": 23, "tags": ["에기르"]}, {"name": "수르트", "grade": 5, "cost": 22, "tags": ["아케인", "기습"]}, {"name": "스즈란", "grade": 5, "cost": 15, "tags": ["시라쿠사", "협동방어"]}, {"name": "시", "grade": 5, "cost": 34, "tags": ["염국", "아케인"]}, {"name": "실버애쉬 더 레인프로스트", "grade": 5, "cost": 12, "tags": ["쉐라그", "신속", "투자자"]}, {"name": "마운틴", "grade": 5, "cost": 10, "tags": ["투자자"]}, {"name": "안젤리나", "grade": 5, "cost": 15, "tags": ["시라쿠사", "기적"]}, {"name": "레코드키퍼", "grade": 5, "cost": 18, "tags": ["염국", "기적"]}, {"name": "이그제큐터 디 엑스 포에데레", "grade": 5, "cost": 23, "tags": ["라테라노", "예견"]}, {"name": "블레이즈 디 이그나이팅 스파크", "grade": 5, "cost": 20, "tags": ["염국", "빅토리아"]}, {"name": "엔텔레키아", "grade": 5, "cost": 23, "tags": ["기민", "불굴"]}, {"name": "혼", "grade": 5, "cost": 28, "tags": ["빅토리아"]}, {"name": "사리아", "grade": 5, "cost": 22, "tags": ["고수", "독행"]}, {"name": "스펙터 디 언체인드", "grade": 5, "cost": 16, "tags": ["에기르", "불굴"]}, {"name": "쏜즈 더 로드스타", "grade": 5, "cost": 18, "tags": ["신속", "기적"]}, {"name": "무에나", "grade": 5, "cost": 11, "tags": ["카시미어"]}, {"name": "산탈라", "grade": 5, "cost": 23, "tags": ["예견"]}, {"name": "르무엔", "grade": 6, "cost": 22, "tags": ["라테라노", "정밀"]}, {"name": "위", "grade": 6, "cost": 25, "tags": ["염국", "고수"]}, {"name": "패신저", "grade": 6, "cost": 33, "tags": ["사르곤", "정밀", "신속"]}, {"name": "비나 빅토리아", "grade": 6, "cost": 21, "tags": ["빅토리아", "기적"]}, {"name": "비르투오사", "grade": 6, "cost": 15, "tags": ["라테라노"]}, {"name": "로즈몬티스", "grade": 6, "cost": 25, "tags": ["정밀", "예견", "협동방어"]}, {"name": "루멘", "grade": 6, "cost": 20, "tags": ["조력"]}, {"name": "아스트젠 더 라이트체이서", "grade": 6, "cost": 15, "tags": ["기민", "아케인"]}, {"name": "라플란드 더 데카덴차", "grade": 6, "cost": 21, "tags": ["시라쿠사"]}, {"name": "에이야퍄들라 더 크비트아스카", "grade": 6, "cost": 15, "tags": ["조력"]}, {"name": "프라마닉스 더 프레리타", "grade": 6, "cost": 24, "tags": ["쉐라그", "아케인"]}, {"name": "스카디 더 커럽팅 하트", "grade": 6, "cost": 7, "tags": ["에기르"]}, {"name": "페페", "grade": 6, "cost": 20, "tags": ["사르곤", "불굴"]}, {"name": "리드 더 플레임 섀도우", "grade": 6, "cost": 16, "tags": ["빅토리아", "정밀"]}, {"name": "뮤엘시스", "grade": 6, "cost": 14, "tags": ["조화"]}, {"name": "엑시아 더 뉴 커버넌트", "grade": 6, "cost": 12, "tags": ["라테라노"]}, {"name": "치우바이", "grade": 6, "cost": 20, "tags": ["염국", "기습"]}, {"name": "니어 더 래디언트 나이트", "grade": 6, "cost": 19, "tags": ["카시미어", "기습"]}, {"name": "데겐블레허", "grade": 6, "cost": 22, "tags": ["쉐라그", "카시미어", "신속"]}], "picks": [{"name": "사가", "grade": 0, "cost": 14, "tags": ["협동방어"], "pick": true}, {"name": "시즈", "grade": 0, "cost": 13, "tags": ["빅토리아"], "pick": true}, {"name": "레이즈 더 썬더브링어", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "블레이즈", "grade": 0, "cost": 23, "tags": ["염국", "빅토리아"], "pick": true}, {"name": "쏜즈", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "외드레르", "grade": 0, "cost": 23, "tags": ["협동방어"], "pick": true}, {"name": "첸", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "팔라스", "grade": 0, "cost": 17, "tags": ["협동방어"], "pick": true}, {"name": "니엔", "grade": 0, "cost": 23, "tags": ["염국"], "pick": true}, {"name": "유넥티스", "grade": 0, "cost": 32, "tags": ["사르곤"], "pick": true}, {"name": "페넌스", "grade": 0, "cost": 34, "tags": ["시라쿠사"], "pick": true}, {"name": "Ash", "grade": 0, "cost": 14, "tags": ["협동방어"], "pick": true}, {"name": "나란투야", "grade": 0, "cost": 16, "tags": ["사르곤"], "pick": true}, {"name": "로사", "grade": 0, "cost": 23, "tags": ["협동방어"], "pick": true}, {"name": "위셔델", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "티폰", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "피아메타", "grade": 0, "cost": 29, "tags": ["라테라노"], "pick": true}, {"name": "네크라스", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "린", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "만트라", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "에이야퍄들라", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "이프리트", "grade": 0, "cost": 34, "tags": ["협동방어"], "pick": true}, {"name": "Mon3tr", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "샤이닝", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "내스티", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "링", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "사일런스 더 패러디그매틱", "grade": 0, "cost": 12, "tags": ["협동방어"], "pick": true}, {"name": "트라고디아", "grade": 0, "cost": 16, "tags": ["빅토리아"], "pick": true}, {"name": "Ela", "grade": 0, "cost": 11, "tags": ["협동방어"], "pick": true}, {"name": "리", "grade": 0, "cost": 9, "tags": ["염국"], "pick": true}, {"name": "아스카론", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "위디", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "키린R 야토", "grade": 0, "cost": 10, "tags": ["협동방어"], "pick": true}, {"name": "첸 더 던스트릭", "grade": 0, "cost": 21, "tags": ["염국"], "pick": true}, {"name": "토가와 사키코", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "사일라흐", "grade": 0, "cost": 11, "tags": ["빅토리아"], "pick": true}, {"name": "레싱", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "벨로네", "grade": 0, "cost": 11, "tags": ["시라쿠사"], "pick": true}, {"name": "비비아나", "grade": 0, "cost": 21, "tags": ["카시미어"], "pick": true}, {"name": "아이린", "grade": 0, "cost": 22, "tags": ["협동방어"], "pick": true}, {"name": "좌락", "grade": 0, "cost": 26, "tags": ["염국"], "pick": true}, {"name": "총웨", "grade": 0, "cost": 11, "tags": ["염국"], "pick": true}, {"name": "헬라그", "grade": 0, "cost": 26, "tags": ["협동방어"], "pick": true}, {"name": "슈", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "제시카 더 리버레이티드", "grade": 0, "cost": 22, "tags": ["빅토리아"], "pick": true}, {"name": "호시구마 더 브리처", "grade": 0, "cost": 26, "tags": ["염국"], "pick": true}, {"name": "W", "grade": 0, "cost": 29, "tags": ["협동방어"], "pick": true}, {"name": "레이", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "슈바르츠", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "첸 더 홀룽데이", "grade": 0, "cost": 31, "tags": ["염국"], "pick": true}, {"name": "파죰카", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "골든글로우", "grade": 0, "cost": 22, "tags": ["빅토리아"], "pick": true}, {"name": "로고스", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "마르실", "grade": 0, "cost": 33, "tags": ["협동방어"], "pick": true}, {"name": "에벤홀츠", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "오올헤약", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "케오베", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "나이팅게일", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "켈시", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "라이디언", "grade": 0, "cost": 10, "tags": ["협동방어"], "pick": true}, {"name": "마젤란", "grade": 0, "cost": 11, "tags": ["협동방어"], "pick": true}, {"name": "스테인리스", "grade": 0, "cost": 19, "tags": ["빅토리아"], "pick": true}, {"name": "하루카", "grade": 0, "cost": 13, "tags": ["협동방어"], "pick": true}, {"name": "도로시", "grade": 0, "cost": 12, "tags": ["협동방어"], "pick": true}, {"name": "아", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "왕", "grade": 0, "cost": 10, "tags": ["염국"], "pick": true}, {"name": "크라운슬레이어", "grade": 0, "cost": 9, "tags": ["시라쿠사"], "pick": true}, {"name": "팬텀", "grade": 0, "cost": 10, "tags": ["빅토리아"], "pick": true}]};
+
+/* 데이터 표로 담기 어려운 특수 규칙 */
+const RULES = {
+  "독행": {maxCount:1},   // [독행] 오퍼레이터 2명 이상 배치 시 무효
+  // 조화: 활성화 시 전장에 있는 핵심 맹약의 활성화 인원 수 +1 (아래에서 밴 예외와 함께 지정)
+  // 오퍼레이터 조합으로 켜지는 맹약이 아니라 정예화 여부로 켜진다.
+  // 밴 대상도 아니고 변형구조체로 지정할 수도 없어서 계산에서 제외한다.
+  "궁극기": {noBan:true, offRoster:true},
+  // 밴 대상에서 빠지는 부가 맹약. 오퍼레이터 태그로는 정상 발동한다.
+  "협동방어": {noBan:true},
+  "조화": {noBan:true, harmony:true}
+};
+
+// 변형구조체로 활성화할 수 있는 맹약
+const MORPH = new Set(["염국","빅토리아","에기르","고수","사르곤","불굴","라테라노",
+                       "쉐라그","정밀","기습","신속","카시미어","시라쿠사","아케인"]);
+
+const COVS = DATA.covenants.map(c=>({...c, ...(RULES[c.name]||{})}));
+const NC = COVS.length;
+const covIdx = new Map(COVS.map((c,i)=>[c.name,i]));
+const CORE_IDX = COVS.map((c,i)=>c.type==="core"?i:-1).filter(i=>i>=0);
+const AUX_IDX  = COVS.map((c,i)=>c.type==="aux"?i:-1).filter(i=>i>=0);
+const BANNABLE_AUX = AUX_IDX.filter(i=>!COVS[i].noBan);
+const HARMONY_I = COVS.findIndex(c=>c.harmony);
+const BAN_CORE_MAX = 3, BAN_AUX_MAX = 4;
+const TIER_VALUE = [1, 2.6, 4.8];
+const GRADE = {0:"선발",1:"I",2:"II",3:"III",4:"IV",5:"V",6:"VI"};
+const isApex = (ci, lv)=> COVS[ci].type==="core" && lv === COVS[ci].tiers.length-1;
+
+const mk = (o,i,isPick)=>({...o, i, pick:!!isPick,
+  tagIdx: o.tags.map(t=>covIdx.get(t)).filter(v=>v!==undefined)});
+const BASE = DATA.operators.map((o,i)=>mk(o,i,false));
+const PICKS = DATA.picks.map((o,i)=>mk(o, BASE.length+i, true));
+const ALL = BASE.concat(PICKS);
+
+const S = {
+  mode:"ban", banned:new Set(), deckSize:8,
+  wCore:1.6, wAux:1.0, apex:5.0, fav:-1, bonus:-1,
+  picked:[null,null,null,null],   // 0,1 = 5티어 / 2,3 = 6티어
+  deck:[], results:[], reco:null,
+  page:1, perPage:20,
+  filters:{core:"",aux:"",min:0,apexOnly:false}
+};
+const pickedTier = i => { const s = S.picked.indexOf(i); return s<0 ? 0 : (s<2 ? 5 : 6); };
+const gradeOf = o => o.pick ? pickedTier(o.i) : o.grade;
+
+const $ = s=>document.querySelector(s);
+const el = (t,cls,txt)=>{const n=document.createElement(t); if(cls)n.className=cls; if(txt!=null)n.textContent=txt; return n;};
+
+/* ---------- 맹약 계산 ---------- */
+function applyHarmony(c){
+  if(HARMONY_I<0) return c;
+  const h = COVS[HARMONY_I];
+  if(c[HARMONY_I] < h.tiers[0]) return c;
+  const out = c.slice();
+  for(const ci of CORE_IDX) if(out[ci] > 0) out[ci] += 1;
+  return out;
+}
+function tierOf(ci, count){
+  const c = COVS[ci];
+  if(c.maxCount != null && count > c.maxCount) return -1;
+  let lv = -1;
+  for(let i=0;i<c.tiers.length;i++) if(count >= c.tiers[i]) lv = i;
+  return lv;
+}
+function weightOf(ci){
+  return (COVS[ci].type==="core" ? S.wCore : S.wAux) * (S.fav===ci ? 1.9 : 1);
+}
+// 핵심 맹약을 최대 단계까지 올렸을 때 별도 가산점(S.apex)을 준다
+function tierPoints(ci, lv){
+  const v = TIER_VALUE[lv] ?? TIER_VALUE[TIER_VALUE.length-1];
+  return isApex(ci, lv) ? v + S.apex : v;
+}
+function scoreOf(raw){
+  const counts = applyHarmony(raw);
+  let s=0;
+  for(let i=0;i<NC;i++){
+    if(!counts[i]) continue;
+    const lv = tierOf(i, counts[i]);
+    if(lv>=0) s += weightOf(i) * tierPoints(i, lv);
+  }
+  return s;
+}
+function heuristic(raw){
+  const counts = applyHarmony(raw);
+  let s=0;
+  for(let i=0;i<NC;i++){
+    const n = counts[i]; if(!n) continue;
+    const c = COVS[i], w = weightOf(i);
+    const lv = tierOf(i, n);
+    if(lv>=0) s += w * tierPoints(i, lv);
+    if(c.maxCount != null) continue;
+    const nxt = lv+1;
+    if(nxt < c.tiers.length){
+      const from = lv>=0 ? c.tiers[lv] : 0;
+      const span = c.tiers[nxt]-from;
+      const gain = tierPoints(i, nxt) - (lv>=0 ? tierPoints(i, lv) : 0);
+      // 최대 단계로 가는 길목은 더 강하게 밀어준다 (빔 탐색이 중도 포기하지 않도록)
+      const pull = (c.type==="core" && nxt === c.tiers.length-1) ? 0.62 : 0.45;
+      if(span>0) s += w * gain * pull * ((n-from)/span);
+    }
+  }
+  return s;
+}
+function activeList(raw){
+  const counts = applyHarmony(raw);
+  const out=[];
+  for(let i=0;i<NC;i++){
+    const lv = tierOf(i, counts[i]);
+    if(lv>=0) out.push({ci:i, lv, n:counts[i], banned:S.banned.has(i), apex:isApex(i,lv)});
+  }
+  out.sort((a,b)=> (COVS[a.ci].type===COVS[b.ci].type) ? (b.lv-a.lv || b.n-a.n)
+                                                      : (COVS[a.ci].type==="core"?-1:1));
+  return out;
+}
+function patternKey(raw){
+  const counts = applyHarmony(raw);
+  const p=[];
+  for(let i=0;i<NC;i++){ const lv=tierOf(i,counts[i]); if(lv>=0) p.push(i+":"+lv); }
+  return p.join("|");
+}
+
+/* ---------- 밴 판정 ---------- */
+function poolOperators(){
+  const picked = S.picked.filter(x=>x!=null).map(i=>PICKS[i - BASE.length]);
+  return BASE.concat(picked);
+}
+function bannedIn(list){
+  const dead = new Set();
+  if(!S.banned.size) return dead;
+  for(const o of list){
+    if(!o.tagIdx.length) continue;
+    if(o.tagIdx.every(t=>S.banned.has(t))) dead.add(o.i);
+  }
+  return dead;
+}
+
+/* ---------- 탐색 ---------- */
+function search(){
+  const t0 = performance.now();
+  const all = poolOperators();
+  const dead = bannedIn(all);
+  let pool = all.filter(o=>!dead.has(o.i));
+
+  // 동일한 맹약 조합의 오퍼레이터는 덱 인원 수만큼만 남긴다 (계산상 완전히 동등)
+  const bySig = new Map();
+  for(const o of pool){
+    const k = o.tagIdx.slice().sort((a,b)=>a-b).join(",");
+    if(!bySig.has(k)) bySig.set(k, []);
+    bySig.get(k).push(o);
+  }
+  const k = Math.min(S.deckSize, pool.length);
+  pool = [];
+  for(const g of bySig.values()){
+    g.sort((a,b)=> a.cost-b.cost || b.grade-a.grade);
+    for(let i=0;i<Math.min(k, g.length); i++) pool.push(g[i]);
+  }
+  pool.sort((a,b)=> b.grade-a.grade || a.name.localeCompare(b.name));
+
+  // 빔 폭. BEAM_MAIN 은 순수 점수 상위, BEAM_PER 는 "이 맹약을 가장 많이 쌓은 덱" 별로 따로 확보하는 자리.
+  // 후자가 없으면 염국 9처럼 초반에 손해 보고 후반에 터지는 갈래가 중간에 잘려나간다.
+  const BEAM_MAIN = 1600, BEAM_PER = 45;
+  const base = new Int8Array(NC);
+  if(S.bonus>=0) base[S.bonus] += 1;
+
+  let beam = [{c:base, last:-1, parent:null, op:-1, h:heuristic(base), dom:(S.bonus>=0?S.bonus:0)}];
+  let expanded = 0;
+
+  for(let d=0; d<k; d++){
+    const map = new Map();
+    const need = k - d;
+    for(const st of beam){
+      for(let i=st.last+1; i<pool.length; i++){
+        if(pool.length - i < need) break;
+        expanded++;
+        const c = st.c.slice();
+        let dom = st.dom;
+        for(const t of pool[i].tagIdx){ c[t]++; if(c[t] > c[dom]) dom = t; }
+        const key = String.fromCharCode.apply(null, c);
+        const prev = map.get(key);
+        if(prev && prev.last <= i) continue;
+        const h = heuristic(c);
+        if(!prev || h > prev.h) map.set(key, {c, last:i, parent:st, op:i, h, dom});
+      }
+    }
+    if(!map.size) break;
+
+    const arr = Array.from(map.values());
+    if(arr.length <= BEAM_MAIN){ beam = arr; continue; }
+    arr.sort((a,b)=>b.h-a.h);
+    const chosen = new Set(arr.slice(0, BEAM_MAIN));
+    const buckets = new Map();
+    for(const s of arr){
+      let g = buckets.get(s.dom);
+      if(!g) buckets.set(s.dom, g=[]);
+      g.push(s);
+    }
+    for(const [dom,g] of buckets){
+      g.sort((a,b)=> b.c[dom]-a.c[dom] || b.h-a.h);
+      for(let i=0;i<Math.min(BEAM_PER, g.length);i++) chosen.add(g[i]);
+    }
+    beam = Array.from(chosen);
+  }
+
+  const byPattern = new Map();
+  for(const st of beam){
+    let n=0, cur=st; while(cur && cur.op>=0){ n++; cur=cur.parent; }
+    if(n !== k) continue;
+    const sc = scoreOf(st.c);
+    const p = patternKey(st.c);
+    const prev = byPattern.get(p);
+    if(!prev || sc > prev.score) byPattern.set(p, {score:sc, st});
+  }
+
+  const out = [];
+  for(const {score, st} of byPattern.values()){
+    const ids=[]; let cur=st; while(cur && cur.op>=0){ ids.push(cur.op); cur=cur.parent; }
+    const act = activeList(st.c);
+    const coreAct = act.filter(a=>COVS[a.ci].type==="core");
+    out.push({
+      score, act, ops: ids.reverse().map(i=>pool[i]),
+      nActive: act.length, nCore: coreAct.length, nAux: act.length-coreAct.length,
+      nApex: act.filter(a=>a.apex).length,
+      maxCoreLv: coreAct.length ? Math.max(...coreAct.map(a=>a.lv)) : -1
+    });
+  }
+  out.sort((a,b)=> b.score-a.score || b.nApex-a.nApex || b.maxCoreLv-a.maxCoreLv || b.nActive-a.nActive);
+
+  S.results = out; S.reco = out[0]||null;
+  return {ms:Math.round(performance.now()-t0), pool:pool.length, raw:all.length-dead.size, expanded};
+}
+
+/* ---------- 렌더 ---------- */
+function renderChips(){
+  const build = (host, idxs)=>{
+    host.innerHTML="";
+    for(const ci of idxs){
+      const c = COVS[ci];
+      if(c.noBan){
+        const s = el("span","chip "+c.type+" nonban");
+        s.title = (c.offRoster ? "밴 대상이 아닙니다 — 정예화 여부로 켜지는 맹약" : "밴 대상이 아닙니다")+"\n\n"+(c.desc||"");
+        s.append(document.createTextNode(c.name));
+        s.append(el("span","thr", c.tiers.join("/")));
+        s.append(el("span","lock","밴 불가"));
+        host.append(s);
+        continue;
+      }
+      const b = el("button","chip "+c.type);
+      b.type="button";
+      b.setAttribute("aria-pressed", S.banned.has(ci)?"true":"false");
+      b.title = c.desc || "";
+      b.append(document.createTextNode(c.name));
+      b.append(el("span","thr", c.tiers.join("/")));
+      b.addEventListener("click", ()=>toggleBan(ci));
+      host.append(b);
+    }
+  };
+  build($("#coreChips"), CORE_IDX);
+  build($("#auxChips"), AUX_IDX);
+  const nC = CORE_IDX.filter(i=>S.banned.has(i)).length;
+  const nA = BANNABLE_AUX.filter(i=>S.banned.has(i)).length;
+  $("#banCoreN").textContent = nC+"/"+BAN_CORE_MAX;
+  $("#banAuxN").textContent = nA+"/"+BAN_AUX_MAX;
+  $("#banCount").textContent = (nC+nA)+" / "+(BAN_CORE_MAX+BAN_AUX_MAX);
+
+  const echo = $("#buildBanEcho"); echo.innerHTML="";
+  if(!S.banned.size) echo.append(el("p","empty","밴 없음"));
+  else for(const ci of S.banned){
+    const s = el("span","chip "+COVS[ci].type, COVS[ci].name);
+    s.setAttribute("aria-pressed","true"); s.style.cursor="default";
+    echo.append(s);
+  }
+  renderDead();
+}
+function toggleBan(ci){
+  if(COVS[ci].noBan) return;
+  if(S.banned.has(ci)) S.banned.delete(ci);
+  else{
+    const isCore = COVS[ci].type==="core";
+    const cur = (isCore?CORE_IDX:BANNABLE_AUX).filter(i=>S.banned.has(i)).length;
+    if(cur >= (isCore?BAN_CORE_MAX:BAN_AUX_MAX)){
+      const h = isCore ? $("#banCoreN") : $("#banAuxN");
+      h.animate?.([{opacity:1},{opacity:.2},{opacity:1}],{duration:420});
+      return;
+    }
+    S.banned.add(ci);
+  }
+  renderChips(); renderPicks(); renderOpGrid(); renderBuild();
+}
+function renderDead(){
+  const all = poolOperators();
+  const dead = bannedIn(all);
+  const host = $("#deadOps"); host.innerHTML="";
+  $("#deadCount").textContent = dead.size+"명";
+  $("#deadHint").classList.toggle("hidden", dead.size>0);
+  for(const o of all){
+    if(!dead.has(o.i)) continue;
+    const s = el("span","optag dead");
+    s.append(el("span","g", GRADE[gradeOf(o)]));
+    s.append(document.createTextNode(o.name));
+    s.title = o.tags.join(" · ");
+    host.append(s);
+  }
+}
+
+/* 선발 오퍼레이터 */
+function renderPicks(){
+  const host = $("#pickSlots"); host.innerHTML="";
+  const labels = ["5티어","5티어","6티어","6티어"];
+  S.picked.forEach((idx,slot)=>{
+    if(idx==null){
+      const d = el("div","pslot");
+      d.append(el("span","tier", labels[slot]));
+      d.append(el("span","","비어 있음"));
+      host.append(d);
+    } else {
+      const o = ALL[idx];
+      const b = el("button","pslot filled"); b.type="button";
+      b.append(el("span","tier", labels[slot]));
+      b.append(el("span","", o.name));
+      b.title = o.tags.join(" · ")+" — 클릭하면 해제";
+      b.addEventListener("click", ()=>{ S.picked[slot]=null; afterPickChange(); });
+      host.append(b);
+    }
+  });
+  $("#pickCount").textContent = S.picked.filter(x=>x!=null).length+" / 4";
+
+  const q = ($("#pickSearch").value||"").trim().toLowerCase();
+  const list = $("#pickList"); list.innerHTML="";
+  const free5 = S.picked.slice(0,2).indexOf(null);
+  const free6 = S.picked.slice(2,4).indexOf(null);
+  let shown=0;
+  for(const o of PICKS){
+    if(q && !o.name.toLowerCase().includes(q)) continue;
+    if(shown++ > 300) break;
+    const row = el("div","pickrow");
+    const at = S.picked.indexOf(o.i);
+    if(at>=0) row.classList.add("on");
+    row.append(el("span","pn", o.name));
+    row.append(el("span","tg", o.tags.join("·")+" · "+o.cost));
+    const tb = el("span","tierbtns");
+    if(at>=0){
+      const cur = el("span","tiernow", (at<2?"5":"6")+"티어");
+      const rm = el("button","tbtn rm","해제"); rm.type="button";
+      rm.addEventListener("click", ()=>{ S.picked[at]=null; afterPickChange(); });
+      tb.append(cur, rm);
+    } else {
+      for(const [label, base, free] of [["5티어",0,free5],["6티어",2,free6]]){
+        const b = el("button","tbtn", label); b.type="button";
+        b.disabled = free < 0;
+        b.title = free<0 ? label+" 칸이 가득 찼습니다" : label+" 칸에 넣기";
+        b.addEventListener("click", ()=>{ S.picked[base+free]=o.i; afterPickChange(); });
+        tb.append(b);
+      }
+    }
+    row.append(tb);
+    list.append(row);
+  }
+  if(!shown) list.append(el("p","empty","검색 결과 없음"));
+}
+function afterPickChange(){
+  S.deck = S.deck.filter(i=> i<BASE.length || S.picked.includes(i));
+  renderPicks(); renderDead(); renderOpGrid(); renderBuild();
+}
+
+/* 결과 */
+function synBadges(act){
+  const box = el("div","syn");
+  for(const a of act){
+    const c = COVS[a.ci];
+    const b = el("span","badge "+c.type+(a.banned?" banned":"")+(a.apex?" apex":""));
+    b.append(document.createTextNode(c.name));
+    b.append(el("span","n", String(a.n)));
+    b.append(el("span","lv", a.apex ? "MAX" : "LV"+(a.lv+1)));
+    b.title = (a.banned?"[밴된 맹약] ":"")+(a.apex?"[최대 단계] ":"")+(c.desc||"");
+    box.append(b);
+  }
+  return box;
+}
+function deckCard(r, rank){
+  const card = el("div","deckcard"+(rank===0?" on":""));
+  const head = el("div","dhead");
+  head.append(el("span","rank","#"+(rank+1)));
+  const sc = el("span","score", r.score.toFixed(1)); sc.append(el("small","","PTS"));
+  head.append(sc);
+  if(r.nApex) head.append(el("span","apexflag", r.nApex>1 ? `핵심 MAX ×${r.nApex}` : "핵심 MAX"));
+  head.append(el("span","dsum", `핵심 ${r.nCore} · 부가 ${r.nAux} · 총 ${r.nActive}개 발동`));
+  card.append(head);
+  card.append(synBadges(r.act));
+  const roster = el("div","roster");
+  for(const o of r.ops){
+    const s = el("span","rop"+(o.pick?" ispick":""));
+    s.append(el("span","g", GRADE[gradeOf(o)]));
+    s.append(document.createTextNode(o.name));
+    s.append(el("span","tg", o.tags.join("·")));
+    roster.append(s);
+  }
+  card.append(roster);
+
+  const d = el("details","eff");
+  d.append(el("summary","","발동 맹약 효과"));
+  for(const a of r.act){
+    const c = COVS[a.ci];
+    const row = el("div","row");
+    row.append(el("b","", `${c.name} · ${a.n}명 · LV${a.lv+1}${a.banned?" (밴)":""}`));
+    row.append(document.createTextNode(c.desc||"—"));
+    d.append(row);
+  }
+  card.append(d);
+  return card;
+}
+function passFilter(r){
+  const f=S.filters;
+  if(f.apexOnly && !r.nApex) return false;
+  if(f.min && r.nActive < f.min) return false;
+  if(f.core && !r.act.some(a=>a.ci===covIdx.get(f.core))) return false;
+  if(f.aux  && !r.act.some(a=>a.ci===covIdx.get(f.aux)))  return false;
+  return true;
+}
+function renderResults(meta){
+  const list = S.results.filter(passFilter);
+  if(meta){
+    $("#stAvail").textContent = meta.raw+"명";
+    $("#stSearched").textContent = meta.expanded.toLocaleString();
+    $("#stTime").textContent = meta.ms+"ms";
+  }
+  $("#stPatterns").textContent = list.length.toLocaleString();
+  const rw=$("#recoWrap"), rl=$("#resultList");
+  rw.innerHTML=""; rl.innerHTML="";
+  if(!list.length){
+    const p = el("p","empty","조건에 맞는 조합이 없습니다. 필터를 완화하거나 밴을 조정해 보세요.");
+    p.style.padding="24px 14px"; rl.append(p); $("#pager").innerHTML=""; return;
+  }
+  const best = list[0];
+  const box = el("section","reco");
+  const ph = el("div","ph"); ph.append(el("h2","","추천 조합"));
+  const apexCore = best.act.find(a=>a.apex);
+  const topCore = apexCore || best.act.find(a=>COVS[a.ci].type==="core");
+  ph.append(el("span","count", topCore
+    ? `${COVS[topCore.ci].name} ${apexCore?"최대 단계":"LV"+(topCore.lv+1)} 축 · 부가 ${best.nAux}개 동시 발동`
+    : `부가 ${best.nAux}개 동시 발동`));
+  box.append(ph); box.append(deckCard(best,0)); rw.append(box);
+
+  const rest = list.slice(1);
+  const per = S.perPage;
+  const total = Math.max(1, Math.ceil(rest.length / per));
+  if(S.page > total) S.page = total;
+  if(S.page < 1) S.page = 1;
+  const start = (S.page-1)*per;
+  rest.slice(start, start+per).forEach((r,i)=> rl.append(deckCard(r, start+i+1)));
+  renderPager(total, rest.length);
+}
+
+function pageNumbers(cur, total){
+  if(total <= 7) return Array.from({length:total},(_,i)=>i+1);
+  const out=[1];
+  const s = Math.max(2, cur-2), e = Math.min(total-1, cur+2);
+  if(s > 2) out.push("…");
+  for(let i=s;i<=e;i++) out.push(i);
+  if(e < total-1) out.push("…");
+  out.push(total);
+  return out;
+}
+function goPage(n){
+  S.page = n;
+  renderResults();
+  const rl = $("#resultList");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const y = rl.getBoundingClientRect().top + window.scrollY - 78;
+  window.scrollTo({top:y, behavior: reduce ? "auto" : "smooth"});
+}
+function renderPager(total, count){
+  const host = $("#pager"); host.innerHTML="";
+  if(count <= 0) return;
+  host.append(el("span","pinfo", `2위부터 ${(count+1).toLocaleString()}위까지 ${count.toLocaleString()}개 조합`));
+  const nav = el("nav","pnav");
+  nav.setAttribute("aria-label","조합 목록 페이지");
+  const arrow = (txt, to, dis, lbl)=>{
+    const b = el("button","pbtn arrow", txt); b.type="button";
+    b.disabled = dis; b.setAttribute("aria-label", lbl);
+    if(!dis) b.addEventListener("click", ()=>goPage(to));
+    return b;
+  };
+  nav.append(arrow("‹", S.page-1, S.page<=1, "이전 페이지"));
+  for(const n of pageNumbers(S.page, total)){
+    if(n === "…"){ nav.append(el("span","pgap","…")); continue; }
+    const b = el("button","pbtn", String(n)); b.type="button";
+    if(n === S.page){ b.classList.add("on"); b.setAttribute("aria-current","page"); }
+    else b.addEventListener("click", ()=>goPage(n));
+    nav.append(b);
+  }
+  nav.append(arrow("›", S.page+1, S.page>=total, "다음 페이지"));
+  host.append(nav);
+  host.append(el("span","pinfo mono", `${S.page} / ${total}`));
+}
+
+/* 덱 빌더 */
+function renderSlots(){
+  const host=$("#slots"); host.innerHTML="";
+  $("#slotCount").textContent = S.deck.length+" / "+S.deckSize;
+  for(let i=0;i<S.deckSize;i++){
+    if(i < S.deck.length){
+      const o = ALL[S.deck[i]];
+      const b = el("button","slot filled"); b.type="button";
+      b.append(el("span","g", GRADE[gradeOf(o)]));
+      b.append(document.createTextNode(o.name));
+      b.title="클릭하면 제외";
+      b.addEventListener("click", ()=>{ S.deck.splice(i,1); renderBuild(); renderOpGrid(); });
+      host.append(b);
+    } else host.append(el("div","slot","빈 자리"));
+  }
+}
+function deckRaw(){
+  const c = new Int8Array(NC);
+  if(S.bonus>=0) c[S.bonus]++;
+  for(const i of S.deck) for(const t of ALL[i].tagIdx) c[t]++;
+  return c;
+}
+function renderBuild(){
+  renderSlots();
+  const raw = deckRaw();
+  const counts = applyHarmony(raw);
+  const host = $("#buildSyn"); host.innerHTML="";
+  const rows=[];
+  for(let i=0;i<NC;i++){ if(counts[i]) rows.push({ci:i, n:counts[i], lv:tierOf(i,counts[i])}); }
+  rows.sort((a,b)=> b.lv-a.lv || b.n-a.n);
+  $("#buildActiveN").textContent = rows.filter(r=>r.lv>=0).length+"개";
+  if(!rows.length){ host.append(el("p","empty","오퍼레이터를 골라주세요.")); return; }
+  for(const r of rows){
+    const c = COVS[r.ci];
+    const row = el("div","actrow "+c.type+(r.lv<0?" off":""));
+    const nm = el("span","nm", c.name);
+    if(S.banned.has(r.ci)){ nm.style.textDecoration="line-through"; nm.style.textDecorationColor="var(--ban)"; }
+    row.append(nm);
+    const nextThr = c.maxCount!=null ? null : c.tiers[r.lv+1];
+    row.append(el("span","cnt", nextThr ? `${r.n} / ${nextThr}` : `${r.n}명`));
+    const bar = el("div","bar"), prog = el("div","prog"), fill = el("i");
+    const from = r.lv>=0 ? c.tiers[r.lv] : 0;
+    fill.style.width = (nextThr ? Math.min(100, ((r.n-from)/(nextThr-from))*100) : (r.lv>=0?100:0))+"%";
+    prog.append(fill); bar.append(prog); row.append(bar);
+    row.append(el("span","lvl", r.lv>=0 ? "LV"+(r.lv+1) : (c.maxCount!=null ? "무효" : "–")));
+    row.title = c.desc||"";
+    host.append(row);
+  }
+  if(HARMONY_I>=0 && raw[HARMONY_I] >= COVS[HARMONY_I].tiers[0]){
+    const p = el("p","empty","조화 발동 중 — 전장의 핵심 맹약 중첩 수가 각 +1 되어 계산됩니다.");
+    p.style.marginTop="8px"; host.append(p);
+  }
+}
+function renderOpGrid(){
+  const host=$("#opGrid"); host.innerHTML="";
+  const all = poolOperators();
+  const dead = bannedIn(all);
+  const q = ($("#opSearch").value||"").trim().toLowerCase();
+  const g = $("#fGrade").value, tg = $("#fTag").value;
+  for(const o of all){
+    if(q && !o.name.toLowerCase().includes(q)) continue;
+    if(g==="P"){ if(!o.pick) continue; } else if(g!=="" && String(gradeOf(o))!==g) continue;
+    if(tg && !o.tags.includes(tg)) continue;
+    const isDead = dead.has(o.i), inDeck = S.deck.includes(o.i);
+    const b = el("button","opcard"+(isDead?" banned":"")); b.type="button";
+    b.disabled = isDead;
+    b.setAttribute("aria-pressed", inDeck?"true":"false");
+    b.style.borderLeftColor = isDead ? "var(--ban)"
+      : o.pick ? "var(--pick-line)"
+      : (o.tagIdx.some(t=>COVS[t].type==="core") ? "var(--core-line)" : "var(--aux-line)");
+    const nm = el("div","nm");
+    nm.append(el("span","g", GRADE[gradeOf(o)]));
+    nm.append(document.createTextNode(o.name));
+    nm.append(el("span","c", String(o.cost)));
+    b.append(nm);
+    b.append(el("div","tags", o.tags.join(" · ")));
+    b.addEventListener("click", ()=>{
+      if(isDead) return;
+      const at = S.deck.indexOf(o.i);
+      if(at>=0) S.deck.splice(at,1);
+      else if(S.deck.length < S.deckSize) S.deck.push(o.i);
+      renderBuild(); renderOpGrid();
+    });
+    host.append(b);
+  }
+  if(!host.children.length) host.append(el("p","empty","검색 결과 없음"));
+}
+
+/* 셀렉트 */
+function fillSelects(){
+  $("#favSel").innerHTML = '<option value="-1">없음</option>';
+  $("#bonusSel").innerHTML = '<option value="-1">사용 안 함</option>';
+  $("#fCore").innerHTML = '<option value="">전체</option>';
+  $("#fAux").innerHTML = '<option value="">전체</option>';
+  $("#fTag").innerHTML = '<option value="">전체</option>';
+  COVS.forEach((c,i)=>{
+    if(MORPH.has(c.name)) $("#bonusSel").append(new Option(c.name+" +1", String(i)));
+    if(c.offRoster) return;   // 오퍼레이터 태그로 켜지지 않는 맹약은 조합 계산에서 제외
+    $("#favSel").append(new Option(c.name, String(i)));
+    $("#fTag").append(new Option(c.name, c.name));
+    (c.type==="core" ? $("#fCore") : $("#fAux")).append(new Option(c.name, c.name));
+  });
+}
+
+/* 이벤트 */
+function setMode(m){
+  S.mode=m;
+  $("#mode-ban").setAttribute("aria-pressed", m==="ban");
+  $("#mode-build").setAttribute("aria-pressed", m==="build");
+  $("#viewBan").classList.toggle("hidden", m!=="ban");
+  $("#viewBuild").classList.toggle("hidden", m!=="build");
+}
+$("#mode-ban").addEventListener("click", ()=>setMode("ban"));
+$("#mode-build").addEventListener("click", ()=>setMode("build"));
+$("#themeBtn").addEventListener("click", ()=>{
+  const cur = document.documentElement.getAttribute("data-theme");
+  const dark = cur ? cur==="dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  document.documentElement.setAttribute("data-theme", dark?"light":"dark");
+});
+$("#randomBan").addEventListener("click", ()=>{
+  S.banned.clear();
+  const pick=(a,n)=>{const x=a.slice();for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}return x.slice(0,n);};
+  pick(CORE_IDX,BAN_CORE_MAX).forEach(i=>S.banned.add(i));
+  pick(BANNABLE_AUX,BAN_AUX_MAX).forEach(i=>S.banned.add(i));
+  renderChips(); renderPicks(); renderOpGrid(); renderBuild();
+});
+$("#clearBan").addEventListener("click", ()=>{ S.banned.clear(); renderChips(); renderPicks(); renderOpGrid(); renderBuild(); });
+const setK = k=>{
+  S.deckSize=k;
+  $("#k8").setAttribute("aria-pressed", k===8);
+  $("#k9").setAttribute("aria-pressed", k===9);
+  if(S.deck.length>k) S.deck.length=k;
+  renderBuild();
+};
+$("#k8").addEventListener("click", ()=>setK(8));
+$("#k9").addEventListener("click", ()=>setK(9));
+$("#wCore").addEventListener("input", e=>{S.wCore=+e.target.value; $("#wCoreV").textContent=S.wCore.toFixed(1);});
+$("#wAux").addEventListener("input", e=>{S.wAux=+e.target.value; $("#wAuxV").textContent=S.wAux.toFixed(1);});
+$("#favSel").addEventListener("change", e=>{S.fav=+e.target.value;});
+$("#bonusSel").addEventListener("change", e=>{S.bonus=+e.target.value; renderBuild();});
+$("#fCore").addEventListener("change", e=>{S.filters.core=e.target.value; S.page=1; renderResults();});
+$("#fAux").addEventListener("change", e=>{S.filters.aux=e.target.value; S.page=1; renderResults();});
+$("#fMin").addEventListener("change", e=>{S.filters.min=+e.target.value; S.page=1; renderResults();});
+$("#fApex").addEventListener("change", e=>{S.filters.apexOnly=e.target.checked; S.page=1; renderResults();});
+$("#perPage").addEventListener("change", e=>{S.perPage=+e.target.value; S.page=1; renderResults();});
+$("#wApex").addEventListener("input", e=>{S.apex=+e.target.value; $("#wApexV").textContent=S.apex.toFixed(1);});
+$("#pickSearch").addEventListener("input", renderPicks);
+$("#opSearch").addEventListener("input", renderOpGrid);
+$("#fGrade").addEventListener("change", renderOpGrid);
+$("#fTag").addEventListener("change", renderOpGrid);
+$("#clearDeck").addEventListener("click", ()=>{S.deck=[]; renderBuild(); renderOpGrid();});
+$("#runBtn").addEventListener("click", ()=>{
+  const b=$("#runBtn"); b.disabled=true; b.textContent="계산 중…";
+  setTimeout(()=>{ const m=search(); S.page=1; renderResults(m); b.disabled=false; b.textContent="조합 계산"; }, 15);
+});
+
+/* 초기화 */
+$("#seasonLabel").textContent = DATA.season;
+$("#footData").textContent = `${DATA.season} · 오퍼레이터 ${BASE.length}명 · 선발 ${PICKS.length}명 · 맹약 ${NC}개`;
+fillSelects(); renderChips(); renderPicks(); renderBuild(); renderOpGrid(); setMode("ban");
+(function(){ const m = search(); renderResults(m); })();
+</script>
+
+</body>
+</html>

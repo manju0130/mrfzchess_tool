@@ -20,6 +20,9 @@
   --pick:#5B3FA8; --pick-soft:#EEE8FB; --pick-line:#B7A2E6;
   --focus:#2563EB;
   --shadow:0 1px 2px rgba(19,26,35,.06),0 8px 24px -12px rgba(19,26,35,.18);
+  /* 티어 색 — 게임 내 레어도 색 계열 */
+  --t1:#8A94A2; --t2:#7FB93C; --t3:#3B9FE8; --t4:#9B6FD8; --t5:#D9A81F; --t6:#EE7F26;
+  --tfg:#10141A;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -32,6 +35,8 @@
     --pick:#B69CFF; --pick-soft:#221A3A; --pick-line:#443166;
     --focus:#7AA2FF;
     --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 30px -14px rgba(0,0,0,.8);
+    --t1:#7E8998; --t2:#8FCB45; --t3:#4FB0F2; --t4:#AE85E8; --t5:#E8BE3A; --t6:#FF9440;
+    --tfg:#10141A;
   }
 }
 :root[data-theme="dark"]{
@@ -44,6 +49,8 @@
   --pick:#B69CFF; --pick-soft:#221A3A; --pick-line:#443166;
   --focus:#7AA2FF;
   --shadow:0 1px 2px rgba(0,0,0,.5),0 10px 30px -14px rgba(0,0,0,.8);
+  --t1:#7E8998; --t2:#8FCB45; --t3:#4FB0F2; --t4:#AE85E8; --t5:#E8BE3A; --t6:#FF9440;
+  --tfg:#10141A;
 }
 
 *{box-sizing:border-box}
@@ -88,6 +95,14 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
 .chip.core{border-left-color:var(--core-line)} .chip.aux{border-left-color:var(--aux-line)}
 .chip:hover{border-color:var(--line-strong)}
 .chip[aria-pressed="true"]{background:var(--ban-soft);border-color:var(--ban-line);border-left-color:var(--ban);color:var(--ban);text-decoration:line-through;text-decoration-thickness:1.5px}
+.chip.fav[aria-pressed="true"]{
+  background:var(--core-soft);border-color:var(--core-line);border-left-color:var(--core);
+  color:var(--core);text-decoration:none;font-weight:700;
+}
+.chip.fav.aux[aria-pressed="true"]{
+  background:var(--aux-soft);border-color:var(--aux-line);border-left-color:var(--aux);color:var(--aux);
+}
+.chip.fav[aria-pressed="true"] .thr{color:inherit;opacity:.7}
 .chip.nonban{cursor:default;opacity:.72;border-left-style:dotted;border-style:dashed}
 .chip .lock{font-size:10px;color:var(--faint);margin-left:6px;letter-spacing:.05em}
 .chip .thr{font-size:10.5px;color:var(--faint);margin-left:5px;font-family:"IBM Plex Mono",monospace}
@@ -147,6 +162,14 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
 .tiernow{font-family:"Chakra Petch",sans-serif;font-size:10.5px;font-weight:700;color:var(--pick);letter-spacing:.04em}
 .chk{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;color:var(--faint);letter-spacing:.05em;text-transform:uppercase;font-weight:700;cursor:pointer}
 .chk input{accent-color:var(--core)}
+.chk.boxed{
+  display:inline-flex;align-items:center;gap:7px;cursor:pointer;
+  border:1px solid var(--line);background:var(--panel);padding:5px 10px;
+  font-size:12.5px;font-weight:500;letter-spacing:0;text-transform:none;color:var(--text);
+}
+.chk.boxed:hover{border-color:var(--line-strong)}
+.chk.boxed input{accent-color:var(--ban)}
+.chk.boxed input:checked + span{color:var(--ban);font-weight:700}
 .apexflag{
   font-family:"Chakra Petch",sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.06em;
   color:var(--core);border:1px solid var(--core-line);background:var(--core-soft);padding:1px 7px;
@@ -165,7 +188,11 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
 .rank{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:12px;color:var(--faint);border:1px solid var(--line);padding:1px 7px}
 .score{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:21px;line-height:1;color:var(--core)}
 .score small{font-size:11px;font-weight:600;color:var(--faint);margin-left:4px;letter-spacing:.06em}
-.dsum{margin-left:auto;font-size:12px;color:var(--dim)}
+.dsum{font-size:12px;color:var(--dim)}
+.tierpill{
+  margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--dim);
+  border:1px solid var(--line);padding:1px 7px;white-space:nowrap;
+}
 
 .syn{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
 .badge{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;padding:3px 9px;border:1px solid transparent}
@@ -176,10 +203,22 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
 .badge.banned{opacity:.75;border-style:dashed}
 
 .roster{display:flex;flex-wrap:wrap;gap:5px}
-.rop{font-size:12.5px;padding:3px 9px;background:var(--panel2);border:1px solid var(--line);display:inline-flex;align-items:center;gap:7px}
-.rop.ispick{border-color:var(--pick-line);background:var(--pick-soft)}
-.rop .g{font-family:"Chakra Petch",sans-serif;font-size:10px;font-weight:700;color:var(--faint)}
+.rop{
+  --tc:var(--t5);
+  font-size:12.5px;padding:3px 9px 3px 4px;background:var(--panel2);
+  border:1px solid var(--line);border-left:3px solid var(--tc);
+  display:inline-flex;align-items:center;gap:7px;
+}
+.rop .g{
+  font-family:"Chakra Petch",sans-serif;font-size:10px;font-weight:700;letter-spacing:.03em;
+  background:var(--tc);color:var(--tfg);padding:1px 5px;min-width:24px;text-align:center;
+}
+.rop .rn{font-weight:500}
 .rop .tg{font-size:10.5px;color:var(--faint)}
+.rop.corekey{background:var(--core-soft);border-color:var(--core-line);border-left-color:var(--tc)}
+.rop.corekey .rn{font-weight:700;font-size:13px;color:var(--text)}
+.rop.corekey .tg{color:var(--core);opacity:.85}
+.rop.ispick{box-shadow:inset 0 -2px 0 var(--pick-line)}
 
 .stats{display:flex;gap:18px;flex-wrap:wrap;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--panel2)}
 .stat{display:flex;flex-direction:column;gap:1px}
@@ -192,15 +231,32 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
 
 .slots{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--panel2);min-height:56px;align-items:center}
 .slot{min-width:96px;border:1px dashed var(--line-strong);color:var(--faint);font-size:12px;padding:6px 9px;text-align:center}
-.slot.filled{border-style:solid;border-color:var(--line-strong);background:var(--panel);color:var(--text);cursor:pointer;text-align:left;display:flex;align-items:center;gap:7px}
+.slot.filled{
+  --tc:var(--t5);
+  border-style:solid;border-color:var(--line-strong);border-left:3px solid var(--tc);
+  background:var(--panel);color:var(--text);cursor:pointer;text-align:left;
+  display:flex;align-items:center;gap:7px;padding-left:5px;
+}
+.slot.filled .g{
+  font-family:"Chakra Petch",sans-serif;font-size:10px;font-weight:700;
+  background:var(--tc);color:var(--tfg);padding:1px 5px;min-width:24px;text-align:center;
+}
 .slot.filled:hover{border-color:var(--ban);color:var(--ban)}
 .opgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:6px;padding:14px;max-height:720px;overflow-y:auto}
-.opcard{font:inherit;text-align:left;cursor:pointer;background:var(--panel2);border:1px solid var(--line);border-left-width:3px;padding:7px 9px;display:flex;flex-direction:column;gap:2px;color:var(--text)}
+.opcard{
+  --tc:var(--t5);
+  font:inherit;text-align:left;cursor:pointer;background:var(--panel2);
+  border:1px solid var(--line);border-left:3px solid var(--tc);
+  padding:7px 9px;display:flex;flex-direction:column;gap:2px;color:var(--text);
+}
 .opcard:hover{border-color:var(--line-strong)}
 .opcard[aria-pressed="true"]{background:var(--panel3);border-color:var(--text);border-left-color:var(--text)}
 .opcard.banned{opacity:.42;cursor:not-allowed;border-left-color:var(--ban)}
 .opcard .nm{font-size:12.5px;font-weight:600;display:flex;align-items:baseline;gap:6px}
-.opcard .nm .g{font-family:"Chakra Petch",sans-serif;font-size:10px;color:var(--faint);font-weight:700}
+.opcard .nm .g{
+  font-family:"Chakra Petch",sans-serif;font-size:10px;font-weight:700;
+  background:var(--tc);color:var(--tfg);padding:1px 5px;min-width:24px;text-align:center;
+}
 .opcard .nm .c{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--faint)}
 .opcard .tags{font-size:11px;color:var(--faint);line-height:1.3}
 
@@ -238,6 +294,35 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
   .cond input[type=range]{width:88px}
   .condnote{margin-left:0;flex-basis:100%}
 }
+.bandhead{
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  padding:11px 14px 0;
+}
+.bandhead h3{
+  margin:0;font-size:12px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);
+}
+.bandhead span{font-size:11.5px;color:var(--faint)}
+.bandhead b{color:var(--dim)}
+.favband{
+  display:flex;flex-direction:column;gap:9px;
+  padding:10px 14px 12px;border-bottom:1px solid var(--line);background:var(--panel2);
+}
+.favrow{display:flex;align-items:flex-start;gap:10px}
+.favrow .ck{padding-top:6px;min-width:74px}
+.favrow .ck.core{color:var(--core)} .favrow .ck.aux{color:var(--aux)}
+.favrow .chips{flex:1}
+.favband .chip{font-size:12.5px;padding:4px 9px 4px 8px}
+.favfoot{display:flex;align-items:center;gap:12px}
+.favfoot .btn{margin-left:auto;padding:5px 10px;font-size:12px}
+.optag.ex{
+  cursor:pointer;border-color:var(--line-strong);
+  font:inherit;font-size:12px;padding:3px 6px 3px 3px;
+}
+.optag.ex:hover{border-color:var(--ban);color:var(--ban)}
+.optag.ex .x{font-size:13px;color:var(--faint);line-height:1}
+.optag.ex:hover .x{color:var(--ban)}
+.opcard.excluded{opacity:.35;cursor:not-allowed;border-left-color:var(--line-strong)}
+.opcard.excluded .nm{text-decoration:line-through}
 .pager{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   padding:12px 14px;border-top:1px solid var(--line);background:var(--panel2);
@@ -309,6 +394,16 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
       </section>
 
       <section class="panel">
+        <div class="ph"><h2>제외 오퍼레이터</h2><span class="count" id="exCount">0명</span></div>
+        <div class="pb">
+          <div class="oplist" id="exChips"></div>
+          <input type="search" id="exSearch" placeholder="제외할 오퍼레이터 검색" style="width:100%;margin-top:10px;font:inherit;font-size:12.5px;padding:6px 9px;background:var(--panel);color:var(--text);border:1px solid var(--line)">
+          <div class="picklist" id="exList"></div>
+          <p class="empty" style="margin-top:8px;line-height:1.45">여기 넣은 오퍼레이터는 조합 계산에서 완전히 빠집니다. 특정 오퍼가 모든 추천에 끼어들 때 쓰세요.</p>
+        </div>
+      </section>
+
+      <section class="panel">
         <div class="ph"><h2>밴된 오퍼레이터</h2><span class="count" id="deadCount">0명</span></div>
         <div class="pb"><div class="oplist" id="deadOps"></div><p class="empty" id="deadHint">아직 밴된 오퍼레이터가 없습니다.</p></div>
       </section>
@@ -324,43 +419,58 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
           <div class="stat"><span class="k">소요</span><span class="v mono" id="stTime">–</span></div>
         </div>
         <div class="filters">
-          <label for="fCore">핵심</label><select id="fCore"></select>
-          <label for="fAux">부가</label><select id="fAux"></select>
           <label for="fMin">최소 발동</label>
           <select id="fMin"><option value="0">전체</option><option value="4">4개+</option><option value="5">5개+</option><option value="6">6개+</option><option value="7">7개+</option></select>
           <label class="chk"><input type="checkbox" id="fApex"> 핵심 MAX 달성만</label>
+          <label class="chk"><input type="checkbox" id="fCoreCap" checked> 핵심 초과 숨기기</label>
+          <label class="chk"><input type="checkbox" id="fReqFav"> 우선 맹약 필수</label>
           <label for="perPage">쪽당</label>
           <select id="perPage"><option value="10">10개</option><option value="20" selected>20개</option><option value="50">50개</option></select>
           <button class="btn primary" id="runBtn" style="margin-left:auto">조합 계산</button>
         </div>
         <div class="cond" role="group" aria-label="편성 조건">
+          <div class="cf" title="핵심 맹약은 점수가 높은 것부터 이 개수까지만 점수에 반영합니다. 실전에서 핵심 하나에 몰아주는 편이 강하기 때문에 기본값은 1개입니다.">
+            <span class="ck">핵심 맹약 집중</span>
+            <div class="pillset" role="group" aria-label="핵심 맹약 집중">
+              <button id="cf1" aria-pressed="true">1개</button><button id="cf2" aria-pressed="false">2개</button><button id="cf0" aria-pressed="false">제한 없음</button>
+            </div>
+          </div>
+          <div class="cf" title="오퍼레이터 티어를 점수에 얼마나 반영할지 정합니다. '없음'이면 맹약만 보고, 높일수록 같은 시너지를 만들 수 있을 때 고티어 오퍼를 우선합니다.">
+            <span class="ck">오퍼 티어 비중</span>
+            <div class="pillset" role="group" aria-label="오퍼 티어 비중">
+              <button id="ow0" aria-pressed="false">없음</button><button id="ow1" aria-pressed="true">보통</button><button id="ow2" aria-pressed="false">높음</button>
+            </div>
+          </div>
           <div class="cf">
             <span class="ck">덱 인원</span>
             <div class="pillset" role="group" aria-label="덱 인원" title="인사부 파일 사용 시 9명">
               <button id="k8" aria-pressed="true">8</button><button id="k9" aria-pressed="false">9</button>
             </div>
           </div>
-          <div class="cf" title="핵심 맹약 하나를 최종 단계까지 올린 조합에 주는 보너스. 0이면 발동 개수 위주로 추천합니다.">
-            <label class="ck" for="wApex">핵심 MAX 가산점</label>
-            <div class="cr"><input type="range" id="wApex" min="0" max="12" step="0.5" value="5"><span class="val" id="wApexV">5.0</span></div>
-          </div>
-          <div class="cf" title="높일수록 진영 맹약을 깊게 미는 조합을 추천합니다.">
-            <label class="ck" for="wCore">핵심 가중치</label>
-            <div class="cr"><input type="range" id="wCore" min="0.5" max="3" step="0.1" value="1.6"><span class="val" id="wCoreV">1.6</span></div>
-          </div>
-          <div class="cf" title="높일수록 부가 맹약을 많이 켜는 조합을 추천합니다.">
-            <label class="ck" for="wAux">부가 가중치</label>
-            <div class="cr"><input type="range" id="wAux" min="0.5" max="3" step="0.1" value="1.0"><span class="val" id="wAuxV">1.0</span></div>
-          </div>
-          <div class="cf" title="이 맹약을 축으로 삼는 조합을 위로 올립니다.">
-            <label class="ck" for="favSel">우선 맹약</label>
-            <select id="favSel"></select>
-          </div>
           <div class="cf" title="지정 가능한 14개 맹약 중 하나의 중첩 수를 +1 합니다.">
             <label class="ck" for="bonusSel">변형구조체</label>
             <select id="bonusSel"></select>
           </div>
+          <div class="cf hidden" id="exHarmonyWrap" title="조화는 전장의 모든 핵심 맹약 중첩을 +1 해서 거의 모든 추천 조합에 들어갑니다. 빼고 계산하려면 체크하세요.">
+            <span class="ck">조화 오퍼레이터</span>
+            <label class="chk boxed"><input type="checkbox" id="exHarmony"><span id="exHarmonyLabel">제외</span></label>
+          </div>
           <p class="condnote">값을 바꾼 뒤 <b>조합 계산</b>을 다시 눌러야 반영됩니다.</p>
+        </div>
+        <div class="bandhead"><h3>우선 맹약</h3><span>고른 맹약을 축으로 삼는 조합이 위로 올라옵니다. 반드시 발동시키려면 위의 <b>우선 맹약 필수</b>를 켜세요.</span></div>
+        <div class="favband">
+          <div class="favrow">
+            <span class="ck core">핵심 · 1개</span>
+            <div class="chips" id="favCoreChips"></div>
+          </div>
+          <div class="favrow">
+            <span class="ck aux">부가 · 여러 개</span>
+            <div class="chips" id="favAuxChips"></div>
+          </div>
+          <div class="favfoot">
+            <span class="pinfo" id="favCount">지정 없음</span>
+            <button class="btn" id="clearFav">지정 해제</button>
+          </div>
         </div>
         <div id="recoWrap"></div>
         <div id="resultList"></div>
@@ -438,6 +548,10 @@ const BANNABLE_AUX = AUX_IDX.filter(i=>!COVS[i].noBan);
 const HARMONY_I = COVS.findIndex(c=>c.harmony);
 const BAN_CORE_MAX = 3, BAN_AUX_MAX = 4;
 const TIER_VALUE = [1, 2.6, 4.8];
+// 오퍼레이터 자체의 값어치. 티어가 오를수록 급하게 세지는 오토체스 특성상 등비에 가깝게 잡았다.
+// 이게 없으면 같은 맹약을 만들 수 있는 오퍼 중 아무나 집어서 I티어로 덱이 채워진다.
+const OP_VALUE = [0, 0.6, 1.0, 1.6, 2.6, 4.2, 6.8];
+const OP_WEIGHT = {none:0, mid:0.5, high:1.0};
 const GRADE = {0:"선발",1:"I",2:"II",3:"III",4:"IV",5:"V",6:"VI"};
 const isApex = (ci, lv)=> COVS[ci].type==="core" && lv === COVS[ci].tiers.length-1;
 
@@ -447,13 +561,25 @@ const BASE = DATA.operators.map((o,i)=>mk(o,i,false));
 const PICKS = DATA.picks.map((o,i)=>mk(o, BASE.length+i, true));
 const ALL = BASE.concat(PICKS);
 
+// 조화 태그를 가진 오퍼레이터 (현재 데이터에선 뮤엘시스 1명) — 빠른 제외 토글에 쓴다
+const HARMONY_OPS = HARMONY_I<0 ? [] :
+  DATA.operators.concat(DATA.picks)
+    .map((o,i)=>({o,i}))
+    .filter(x=>x.o.tags.includes(COVS[HARMONY_I].name))
+    .map(x=>x.i);
+
 const S = {
   mode:"ban", banned:new Set(), deckSize:8,
-  wCore:1.6, wAux:1.0, apex:5.0, fav:-1, bonus:-1,
+  // 점수 계수 — UI로 노출하지 않고 고정값으로 쓴다
+  wCore:1.6, wAux:1.0, apex:5.0,
+  bonus:-1, excluded:new Set(),
+  coreFocus:1,              // 점수에 반영할 핵심 맹약 수 (0 = 제한 없음)
+  opW:OP_WEIGHT.mid,        // 오퍼레이터 티어를 점수에 반영하는 비중
+  favCore:-1, favAux:new Set(),
   picked:[null,null,null,null],   // 0,1 = 5티어 / 2,3 = 6티어
   deck:[], results:[], reco:null,
   page:1, perPage:20,
-  filters:{core:"",aux:"",min:0,apexOnly:false}
+  filters:{min:0, apexOnly:false, requireFav:false, coreCap:false}
 };
 const pickedTier = i => { const s = S.picked.indexOf(i); return s<0 ? 0 : (s<2 ? 5 : 6); };
 const gradeOf = o => o.pick ? pickedTier(o.i) : o.grade;
@@ -478,7 +604,25 @@ function tierOf(ci, count){
   return lv;
 }
 function weightOf(ci){
-  return (COVS[ci].type==="core" ? S.wCore : S.wAux) * (S.fav===ci ? 1.9 : 1);
+  const c = COVS[ci];
+  if(c.type==="core") return S.wCore * (S.favCore===ci ? 2.2 : 1);
+  return S.wAux * (S.favAux.has(ci) ? 1.8 : 1);
+}
+// 핵심 맹약은 강한 것부터 S.coreFocus 개까지만 점수에 반영한다.
+// 실전에서 핵심 하나를 최대로 올리고 나머지를 부가로 채우는 편이 강하기 때문에,
+// 두 번째 핵심을 "쫓아가는" 조합이 상위로 올라오지 않게 막는 장치다.
+// 상위 1~2개만 필요하므로 배열 없이 최댓값 두 개만 추적한다 (탐색 루프에서 수백만 번 불린다)
+const CORE_ACC = {all:0, c1:0, c2:0};
+function coreReset(){ CORE_ACC.all=0; CORE_ACC.c1=0; CORE_ACC.c2=0; }
+function corePush(v){
+  CORE_ACC.all += v;
+  if(v > CORE_ACC.c1){ CORE_ACC.c2 = CORE_ACC.c1; CORE_ACC.c1 = v; }
+  else if(v > CORE_ACC.c2){ CORE_ACC.c2 = v; }
+}
+function coreValue(){
+  if(S.coreFocus === 1) return CORE_ACC.c1;
+  if(S.coreFocus === 2) return CORE_ACC.c1 + CORE_ACC.c2;
+  return CORE_ACC.all;
 }
 // 핵심 맹약을 최대 단계까지 올렸을 때 별도 가산점(S.apex)을 준다
 function tierPoints(ci, lv){
@@ -487,34 +631,39 @@ function tierPoints(ci, lv){
 }
 function scoreOf(raw){
   const counts = applyHarmony(raw);
-  let s=0;
+  let aux=0; coreReset();
   for(let i=0;i<NC;i++){
     if(!counts[i]) continue;
     const lv = tierOf(i, counts[i]);
-    if(lv>=0) s += weightOf(i) * tierPoints(i, lv);
+    if(lv<0) continue;
+    const v = weightOf(i) * tierPoints(i, lv);
+    if(COVS[i].type==="core") corePush(v); else aux += v;
   }
-  return s;
+  return aux + coreValue();
 }
 function heuristic(raw){
   const counts = applyHarmony(raw);
-  let s=0;
+  let aux=0; coreReset();
   for(let i=0;i<NC;i++){
     const n = counts[i]; if(!n) continue;
     const c = COVS[i], w = weightOf(i);
     const lv = tierOf(i, n);
-    if(lv>=0) s += w * tierPoints(i, lv);
-    if(c.maxCount != null) continue;
-    const nxt = lv+1;
-    if(nxt < c.tiers.length){
-      const from = lv>=0 ? c.tiers[lv] : 0;
-      const span = c.tiers[nxt]-from;
-      const gain = tierPoints(i, nxt) - (lv>=0 ? tierPoints(i, lv) : 0);
-      // 최대 단계로 가는 길목은 더 강하게 밀어준다 (빔 탐색이 중도 포기하지 않도록)
-      const pull = (c.type==="core" && nxt === c.tiers.length-1) ? 0.62 : 0.45;
-      if(span>0) s += w * gain * pull * ((n-from)/span);
+    let v = lv>=0 ? w * tierPoints(i, lv) : 0;
+    if(c.maxCount == null){
+      const nxt = lv+1;
+      if(nxt < c.tiers.length){
+        const from = lv>=0 ? c.tiers[lv] : 0;
+        const span = c.tiers[nxt]-from;
+        const gain = tierPoints(i, nxt) - (lv>=0 ? tierPoints(i, lv) : 0);
+        // 최대 단계로 가는 길목은 더 강하게 밀어준다 (빔 탐색이 중도 포기하지 않도록)
+        const pull = (c.type==="core" && nxt === c.tiers.length-1) ? 0.62 : 0.45;
+        if(span>0) v += w * gain * pull * ((n-from)/span);
+      }
     }
+    if(!v) continue;
+    if(c.type==="core") corePush(v); else aux += v;
   }
-  return s;
+  return aux + coreValue();
 }
 function activeList(raw){
   const counts = applyHarmony(raw);
@@ -554,7 +703,7 @@ function search(){
   const t0 = performance.now();
   const all = poolOperators();
   const dead = bannedIn(all);
-  let pool = all.filter(o=>!dead.has(o.i));
+  let pool = all.filter(o=>!dead.has(o.i) && !S.excluded.has(o.i));
 
   // 동일한 맹약 조합의 오퍼레이터는 덱 인원 수만큼만 남긴다 (계산상 완전히 동등)
   const bySig = new Map();
@@ -566,18 +715,19 @@ function search(){
   const k = Math.min(S.deckSize, pool.length);
   pool = [];
   for(const g of bySig.values()){
-    g.sort((a,b)=> a.cost-b.cost || b.grade-a.grade);
+    g.sort((a,b)=> gradeOf(b)-gradeOf(a) || a.cost-b.cost);
     for(let i=0;i<Math.min(k, g.length); i++) pool.push(g[i]);
   }
   pool.sort((a,b)=> b.grade-a.grade || a.name.localeCompare(b.name));
 
   // 빔 폭. BEAM_MAIN 은 순수 점수 상위, BEAM_PER 는 "이 맹약을 가장 많이 쌓은 덱" 별로 따로 확보하는 자리.
   // 후자가 없으면 염국 9처럼 초반에 손해 보고 후반에 터지는 갈래가 중간에 잘려나간다.
-  const BEAM_MAIN = 1600, BEAM_PER = 45;
+  const BEAM_MAIN = 900, BEAM_PER = 28;
+  const PV = pool.map(o=> OP_VALUE[gradeOf(o)] ?? OP_VALUE[5]);
   const base = new Int8Array(NC);
   if(S.bonus>=0) base[S.bonus] += 1;
 
-  let beam = [{c:base, last:-1, parent:null, op:-1, h:heuristic(base), dom:(S.bonus>=0?S.bonus:0)}];
+  let beam = [{c:base, last:-1, parent:null, op:-1, h:heuristic(base), dom:(S.bonus>=0?S.bonus:0), ov:0}];
   let expanded = 0;
 
   for(let d=0; d<k; d++){
@@ -591,10 +741,18 @@ function search(){
         let dom = st.dom;
         for(const t of pool[i].tagIdx){ c[t]++; if(c[t] > c[dom]) dom = t; }
         const key = String.fromCharCode.apply(null, c);
+        const ov = st.ov + PV[i];
         const prev = map.get(key);
-        if(prev && prev.last <= i) continue;
-        const h = heuristic(c);
-        if(!prev || h > prev.h) map.set(key, {c, last:i, parent:st, op:i, h, dom});
+        if(prev){
+          // 맹약 구성이 같으면 맹약 점수(hc)도 같다. 다시 계산하지 않고 오퍼 값어치만 더한다.
+          const h = prev.hc + S.opW * ov;
+          if(h > prev.h || (h === prev.h && i < prev.last)){
+            prev.last = i; prev.parent = st; prev.op = i; prev.h = h; prev.ov = ov;
+          }
+          continue;
+        }
+        const hc = heuristic(c);
+        map.set(key, {c, last:i, parent:st, op:i, h:hc + S.opW*ov, hc, dom, ov});
       }
     }
     if(!map.size) break;
@@ -620,7 +778,7 @@ function search(){
   for(const st of beam){
     let n=0, cur=st; while(cur && cur.op>=0){ n++; cur=cur.parent; }
     if(n !== k) continue;
-    const sc = scoreOf(st.c);
+    const sc = scoreOf(st.c) + S.opW * st.ov;
     const p = patternKey(st.c);
     const prev = byPattern.get(p);
     if(!prev || sc > prev.score) byPattern.set(p, {score:sc, st});
@@ -631,8 +789,10 @@ function search(){
     const ids=[]; let cur=st; while(cur && cur.op>=0){ ids.push(cur.op); cur=cur.parent; }
     const act = activeList(st.c);
     const coreAct = act.filter(a=>COVS[a.ci].type==="core");
+    const ops = ids.reverse().map(i=>pool[i]);
     out.push({
-      score, act, ops: ids.reverse().map(i=>pool[i]),
+      score, act, ops,
+      avgTier: ops.reduce((a,o)=>a+gradeOf(o),0)/ops.length,
       nActive: act.length, nCore: coreAct.length, nAux: act.length-coreAct.length,
       nApex: act.filter(a=>a.apex).length,
       maxCoreLv: coreAct.length ? Math.max(...coreAct.map(a=>a.lv)) : -1
@@ -641,7 +801,8 @@ function search(){
   out.sort((a,b)=> b.score-a.score || b.nApex-a.nApex || b.maxCoreLv-a.maxCoreLv || b.nActive-a.nActive);
 
   S.results = out; S.reco = out[0]||null;
-  return {ms:Math.round(performance.now()-t0), pool:pool.length, raw:all.length-dead.size, expanded};
+  const usable = all.filter(o=>!dead.has(o.i) && !S.excluded.has(o.i)).length;
+  return {ms:Math.round(performance.now()-t0), pool:pool.length, raw:usable, expanded};
 }
 
 /* ---------- 렌더 ---------- */
@@ -717,6 +878,78 @@ function renderDead(){
   }
 }
 
+/* 제외 오퍼레이터 */
+function renderExcluded(){
+  const chips = $("#exChips"); chips.innerHTML="";
+  $("#exCount").textContent = S.excluded.size + "명";
+  if(!S.excluded.size) chips.append(el("p","empty","제외된 오퍼레이터 없음"));
+  for(const i of S.excluded){
+    const o = ALL[i];
+    const b = el("button","optag ex"); b.type="button";
+    b.append(el("span","g", GRADE[gradeOf(o)]));
+    b.append(document.createTextNode(o.name));
+    b.append(el("span","x","×"));
+    b.title = "클릭하면 제외 해제";
+    b.addEventListener("click", ()=>{ S.excluded.delete(i); afterExcludeChange(); });
+    chips.append(b);
+  }
+  const q = ($("#exSearch").value||"").trim().toLowerCase();
+  const list = $("#exList"); list.innerHTML="";
+  let shown=0;
+  for(const o of poolOperators()){
+    if(S.excluded.has(o.i)) continue;
+    if(q && !o.name.toLowerCase().includes(q)) continue;
+    if(shown++ > 300) break;
+    const row = el("div","pickrow");
+    row.append(el("span","pn", o.name));
+    row.append(el("span","tg", o.tags.join("·")));
+    const b = el("button","tbtn","제외"); b.type="button";
+    b.addEventListener("click", ()=>{ S.excluded.add(o.i); afterExcludeChange(); });
+    row.append(b);
+    list.append(row);
+  }
+  if(!shown) list.append(el("p","empty","검색 결과 없음"));
+}
+function syncHarmonyBox(){
+  if(!HARMONY_OPS.length) return;
+  const all = HARMONY_OPS.every(i=>S.excluded.has(i));
+  const box = $("#exHarmony");
+  if(box.checked !== all) box.checked = all;
+}
+function afterExcludeChange(){
+  S.deck = S.deck.filter(i=>!S.excluded.has(i));
+  renderExcluded(); renderOpGrid(); renderBuild(); syncHarmonyBox();
+}
+
+/* 우선 맹약 */
+function renderFav(){
+  const build = (host, idxs, isCore)=>{
+    host.innerHTML="";
+    for(const ci of idxs){
+      const c = COVS[ci];
+      if(c.offRoster) continue;   // 오퍼레이터 태그로 켜지지 않는 맹약은 지정 대상이 아니다
+      const on = isCore ? (S.favCore===ci) : S.favAux.has(ci);
+      const b = el("button","chip fav "+c.type); b.type="button";
+      b.setAttribute("aria-pressed", on?"true":"false");
+      b.title = c.desc||"";
+      b.append(document.createTextNode(c.name));
+      b.append(el("span","thr", c.tiers.join("/")));
+      b.addEventListener("click", ()=>{
+        if(isCore) S.favCore = (S.favCore===ci ? -1 : ci);
+        else { if(S.favAux.has(ci)) S.favAux.delete(ci); else S.favAux.add(ci); }
+        renderFav();
+      });
+      host.append(b);
+    }
+  };
+  build($("#favCoreChips"), CORE_IDX, true);
+  build($("#favAuxChips"), AUX_IDX, false);
+  const parts=[];
+  if(S.favCore>=0) parts.push(COVS[S.favCore].name);
+  for(const ci of S.favAux) parts.push(COVS[ci].name);
+  $("#favCount").textContent = parts.length ? parts.join(" · ") : "지정 없음";
+}
+
 /* 선발 오퍼레이터 */
 function renderPicks(){
   const host = $("#pickSlots"); host.innerHTML="";
@@ -774,7 +1007,8 @@ function renderPicks(){
 }
 function afterPickChange(){
   S.deck = S.deck.filter(i=> i<BASE.length || S.picked.includes(i));
-  renderPicks(); renderDead(); renderOpGrid(); renderBuild();
+  for(const i of [...S.excluded]) if(i>=BASE.length && !S.picked.includes(i)) S.excluded.delete(i);
+  renderPicks(); renderDead(); renderExcluded(); renderOpGrid(); renderBuild();
 }
 
 /* 결과 */
@@ -798,15 +1032,27 @@ function deckCard(r, rank){
   const sc = el("span","score", r.score.toFixed(1)); sc.append(el("small","","PTS"));
   head.append(sc);
   if(r.nApex) head.append(el("span","apexflag", r.nApex>1 ? `핵심 MAX ×${r.nApex}` : "핵심 MAX"));
+  const tierPill = el("span","tierpill", `평균 티어 ${r.avgTier.toFixed(1)}`);
+  tierPill.title = "덱 구성원 티어 평균 — 높을수록 개별 오퍼레이터가 강합니다";
+  head.append(tierPill);
   head.append(el("span","dsum", `핵심 ${r.nCore} · 부가 ${r.nAux} · 총 ${r.nActive}개 발동`));
   card.append(head);
   card.append(synBadges(r.act));
+  const activeCore = new Set(r.act.filter(a=>COVS[a.ci].type==="core").map(a=>a.ci));
+  // 조화는 전장의 모든 핵심 맹약 중첩을 올리므로 핵심 구성원과 같이 강조한다
+  const harmonyOn = HARMONY_I>=0 && r.act.some(a=>a.ci===HARMONY_I);
   const roster = el("div","roster");
   for(const o of r.ops){
-    const s = el("span","rop"+(o.pick?" ispick":""));
-    s.append(el("span","g", GRADE[gradeOf(o)]));
-    s.append(document.createTextNode(o.name));
+    const g = gradeOf(o);
+    const keyCore = o.tagIdx.find(t=>activeCore.has(t));
+    const isHarmony = harmonyOn && o.tagIdx.includes(HARMONY_I);
+    const s = el("span","rop"+(o.pick?" ispick":"")+((keyCore!==undefined||isHarmony)?" corekey":""));
+    s.style.setProperty("--tc", `var(--t${g||5})`);
+    s.append(el("span","g", GRADE[g]));
+    s.append(el("span","rn", o.name));
     s.append(el("span","tg", o.tags.join("·")));
+    if(isHarmony) s.title = "조화 — 전장의 모든 핵심 맹약 중첩 +1";
+    else if(keyCore!==undefined) s.title = `${COVS[keyCore].name} 맹약 구성원`;
     roster.append(s);
   }
   card.append(roster);
@@ -827,8 +1073,11 @@ function passFilter(r){
   const f=S.filters;
   if(f.apexOnly && !r.nApex) return false;
   if(f.min && r.nActive < f.min) return false;
-  if(f.core && !r.act.some(a=>a.ci===covIdx.get(f.core))) return false;
-  if(f.aux  && !r.act.some(a=>a.ci===covIdx.get(f.aux)))  return false;
+  if(f.coreCap && S.coreFocus>0 && r.nCore > S.coreFocus) return false;
+  if(f.requireFav){
+    if(S.favCore>=0 && !r.act.some(a=>a.ci===S.favCore)) return false;
+    for(const ci of S.favAux) if(!r.act.some(a=>a.ci===ci)) return false;
+  }
   return true;
 }
 function renderResults(meta){
@@ -916,6 +1165,7 @@ function renderSlots(){
     if(i < S.deck.length){
       const o = ALL[S.deck[i]];
       const b = el("button","slot filled"); b.type="button";
+      b.style.setProperty("--tc", `var(--t${gradeOf(o)||5})`);
       b.append(el("span","g", GRADE[gradeOf(o)]));
       b.append(document.createTextNode(o.name));
       b.title="클릭하면 제외";
@@ -971,21 +1221,23 @@ function renderOpGrid(){
     if(q && !o.name.toLowerCase().includes(q)) continue;
     if(g==="P"){ if(!o.pick) continue; } else if(g!=="" && String(gradeOf(o))!==g) continue;
     if(tg && !o.tags.includes(tg)) continue;
+    const isEx = S.excluded.has(o.i);
     const isDead = dead.has(o.i), inDeck = S.deck.includes(o.i);
-    const b = el("button","opcard"+(isDead?" banned":"")); b.type="button";
-    b.disabled = isDead;
+    const b = el("button","opcard"+(isDead?" banned":"")+(isEx&&!isDead?" excluded":"")); b.type="button";
+    b.disabled = isDead || isEx;
+    if(isEx && !isDead) b.title = "제외된 오퍼레이터";
     b.setAttribute("aria-pressed", inDeck?"true":"false");
-    b.style.borderLeftColor = isDead ? "var(--ban)"
-      : o.pick ? "var(--pick-line)"
-      : (o.tagIdx.some(t=>COVS[t].type==="core") ? "var(--core-line)" : "var(--aux-line)");
+    const g0 = gradeOf(o);
+    b.style.setProperty("--tc", `var(--t${g0||5})`);
+    if(isDead) b.style.borderLeftColor = "var(--ban)";
     const nm = el("div","nm");
-    nm.append(el("span","g", GRADE[gradeOf(o)]));
+    nm.append(el("span","g", GRADE[g0]));
     nm.append(document.createTextNode(o.name));
     nm.append(el("span","c", String(o.cost)));
     b.append(nm);
     b.append(el("div","tags", o.tags.join(" · ")));
     b.addEventListener("click", ()=>{
-      if(isDead) return;
+      if(isDead || isEx) return;
       const at = S.deck.indexOf(o.i);
       if(at>=0) S.deck.splice(at,1);
       else if(S.deck.length < S.deckSize) S.deck.push(o.i);
@@ -998,17 +1250,12 @@ function renderOpGrid(){
 
 /* 셀렉트 */
 function fillSelects(){
-  $("#favSel").innerHTML = '<option value="-1">없음</option>';
   $("#bonusSel").innerHTML = '<option value="-1">사용 안 함</option>';
-  $("#fCore").innerHTML = '<option value="">전체</option>';
-  $("#fAux").innerHTML = '<option value="">전체</option>';
   $("#fTag").innerHTML = '<option value="">전체</option>';
   COVS.forEach((c,i)=>{
     if(MORPH.has(c.name)) $("#bonusSel").append(new Option(c.name+" +1", String(i)));
     if(c.offRoster) return;   // 오퍼레이터 태그로 켜지지 않는 맹약은 조합 계산에서 제외
-    $("#favSel").append(new Option(c.name, String(i)));
     $("#fTag").append(new Option(c.name, c.name));
-    (c.type==="core" ? $("#fCore") : $("#fAux")).append(new Option(c.name, c.name));
   });
 }
 
@@ -1044,17 +1291,41 @@ const setK = k=>{
 };
 $("#k8").addEventListener("click", ()=>setK(8));
 $("#k9").addEventListener("click", ()=>setK(9));
-$("#wCore").addEventListener("input", e=>{S.wCore=+e.target.value; $("#wCoreV").textContent=S.wCore.toFixed(1);});
-$("#wAux").addEventListener("input", e=>{S.wAux=+e.target.value; $("#wAuxV").textContent=S.wAux.toFixed(1);});
-$("#favSel").addEventListener("change", e=>{S.fav=+e.target.value;});
+$("#clearFav").addEventListener("click", ()=>{ S.favCore=-1; S.favAux.clear(); renderFav(); });
+const setCoreFocus = v=>{
+  S.coreFocus = v;
+  $("#cf1").setAttribute("aria-pressed", v===1);
+  $("#cf2").setAttribute("aria-pressed", v===2);
+  $("#cf0").setAttribute("aria-pressed", v===0);
+  $("#fCoreCap").disabled = (v===0);
+  S.page=1; renderResults();
+};
+const setOpW = (v, id)=>{
+  S.opW = v;
+  for(const k of ["ow0","ow1","ow2"]) $("#"+k).setAttribute("aria-pressed", k===id);
+};
+$("#ow0").addEventListener("click", ()=>setOpW(OP_WEIGHT.none,"ow0"));
+$("#ow1").addEventListener("click", ()=>setOpW(OP_WEIGHT.mid,"ow1"));
+$("#ow2").addEventListener("click", ()=>setOpW(OP_WEIGHT.high,"ow2"));
+$("#cf1").addEventListener("click", ()=>setCoreFocus(1));
+$("#cf2").addEventListener("click", ()=>setCoreFocus(2));
+$("#cf0").addEventListener("click", ()=>setCoreFocus(0));
 $("#bonusSel").addEventListener("change", e=>{S.bonus=+e.target.value; renderBuild();});
-$("#fCore").addEventListener("change", e=>{S.filters.core=e.target.value; S.page=1; renderResults();});
-$("#fAux").addEventListener("change", e=>{S.filters.aux=e.target.value; S.page=1; renderResults();});
+$("#fCoreCap").addEventListener("change", e=>{S.filters.coreCap=e.target.checked; S.page=1; renderResults();});
+$("#fReqFav").addEventListener("change", e=>{S.filters.requireFav=e.target.checked; S.page=1; renderResults();});
 $("#fMin").addEventListener("change", e=>{S.filters.min=+e.target.value; S.page=1; renderResults();});
 $("#fApex").addEventListener("change", e=>{S.filters.apexOnly=e.target.checked; S.page=1; renderResults();});
 $("#perPage").addEventListener("change", e=>{S.perPage=+e.target.value; S.page=1; renderResults();});
-$("#wApex").addEventListener("input", e=>{S.apex=+e.target.value; $("#wApexV").textContent=S.apex.toFixed(1);});
 $("#pickSearch").addEventListener("input", renderPicks);
+$("#exSearch").addEventListener("input", renderExcluded);
+if(HARMONY_OPS.length){
+  $("#exHarmonyWrap").classList.remove("hidden");
+  $("#exHarmonyLabel").textContent = ALL[HARMONY_OPS[0]].name + " 제외";
+  $("#exHarmony").addEventListener("change", e=>{
+    for(const i of HARMONY_OPS){ if(e.target.checked) S.excluded.add(i); else S.excluded.delete(i); }
+    afterExcludeChange();
+  });
+}
 $("#opSearch").addEventListener("input", renderOpGrid);
 $("#fGrade").addEventListener("change", renderOpGrid);
 $("#fTag").addEventListener("change", renderOpGrid);
@@ -1067,7 +1338,8 @@ $("#runBtn").addEventListener("click", ()=>{
 /* 초기화 */
 $("#seasonLabel").textContent = DATA.season;
 $("#footData").textContent = `${DATA.season} · 오퍼레이터 ${BASE.length}명 · 선발 ${PICKS.length}명 · 맹약 ${NC}개`;
-fillSelects(); renderChips(); renderPicks(); renderBuild(); renderOpGrid(); setMode("ban");
+S.filters.coreCap = $("#fCoreCap").checked;
+fillSelects(); renderChips(); renderFav(); renderPicks(); renderExcluded(); renderBuild(); renderOpGrid(); setMode("ban");
 (function(){ const m = search(); renderResults(m); })();
 </script>
 

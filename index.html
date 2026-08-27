@@ -315,14 +315,77 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
 .favfoot{display:flex;align-items:center;gap:12px}
 .favfoot .btn{margin-left:auto;padding:5px 10px;font-size:12px}
 .optag.ex{
-  cursor:pointer;border-color:var(--line-strong);
+  cursor:pointer;border-color:var(--ban-line);background:var(--ban-soft);color:var(--ban);
   font:inherit;font-size:12px;padding:3px 6px 3px 3px;
 }
-.optag.ex:hover{border-color:var(--ban);color:var(--ban)}
-.optag.ex .x{font-size:13px;color:var(--faint);line-height:1}
-.optag.ex:hover .x{color:var(--ban)}
+.optag.ex:hover{border-color:var(--ban)}
+.optag.ex .x,.optag.lock .x{font-size:13px;line-height:1;opacity:.6}
+.optag.ex:hover .x,.optag.lock:hover .x{opacity:1}
+.optag.lock{
+  cursor:pointer;border-color:var(--focus);color:var(--focus);
+  background:color-mix(in srgb, var(--focus) 12%, transparent);
+  font:inherit;font-size:12px;padding:3px 6px 3px 3px;
+}
+.optag.lock:hover{border-color:var(--ban);color:var(--ban)}
+.optag .g{color:inherit;opacity:.7}
+#exChips{display:flex;flex-direction:column;gap:10px}
+.exgroup{}
+.exgroup:last-of-type{margin-bottom:0}
+.exlabel{
+  display:flex;align-items:center;gap:7px;margin:0 0 6px;
+  font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+}
+.exlabel .rule{flex:1;height:1px;background:var(--line)}
+.exlabel.lock{color:var(--focus)}
+.exlabel.ex{color:var(--ban)}
+.exlabel .cnt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;opacity:.8}
 .opcard.excluded{opacity:.35;cursor:not-allowed;border-left-color:var(--line-strong)}
 .opcard.excluded .nm{text-decoration:line-through}
+.ic{
+  width:15px;height:15px;flex:none;display:inline-block;vertical-align:-3px;
+  background-color:currentColor;
+  -webkit-mask:var(--icon) center/contain no-repeat;
+  mask:var(--icon) center/contain no-repeat;
+}
+.ic.noic{display:none}
+.chip{display:inline-flex;align-items:center;gap:6px}
+.chip .ic{opacity:.85}
+.badge .ic{width:14px;height:14px;opacity:.95}
+.actrow .ic{width:17px;height:17px;opacity:.9}
+.actrow.core .ic{color:var(--core)} .actrow.aux .ic{color:var(--aux)}
+.badge .ov{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:700;
+  border:1px dashed currentColor;padding:0 4px;opacity:.85;
+}
+.badge.maxed .lv{font-weight:800}
+.tbtn.lk{border-color:var(--focus);color:var(--focus)}
+.tbtn.lk:hover:not(:disabled){background:color-mix(in srgb, var(--focus) 14%, transparent)}
+.rop.locked{box-shadow:inset 0 0 0 2px var(--focus)}
+.btn.primary.stale{
+  background:var(--core);border-color:var(--core);color:#10141A;
+  animation:stalePulse 1.6s ease-in-out infinite;
+}
+@keyframes stalePulse{0%,100%{opacity:1}50%{opacity:.72}}
+.opband{
+  margin:0;padding:11px 14px 12px;border-bottom:1px solid var(--line);background:var(--panel2);
+}
+.opband > summary{color:var(--dim)}
+.opband[open] > summary{margin-bottom:10px}
+.opbandbody{display:flex;flex-direction:column;gap:10px}
+.oprow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.opbandbody #exSearch{
+  font:inherit;font-size:12.5px;padding:6px 9px;flex:1;min-width:180px;max-width:320px;
+  background:var(--panel);color:var(--text);border:1px solid var(--line);
+}
+.oprow .btn{padding:6px 11px;font-size:12px}
+.opbandbody .picklist{margin-top:0;max-height:290px}
+.opbandbody .empty{padding:0;line-height:1.45}
+@media (min-width:820px){
+  .opbandbody .picklist{
+    display:grid;grid-template-columns:1fr 1fr;align-content:start;
+  }
+  .opbandbody .pickrow:nth-child(odd){border-right:1px solid var(--line)}
+}
 .pager{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   padding:12px 14px;border-top:1px solid var(--line);background:var(--panel2);
@@ -343,7 +406,16 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
 .pgap{color:var(--faint);padding:5px 2px;font-size:13px}
 .hidden{display:none!important}
 details.eff{margin-top:10px;font-size:12.5px;color:var(--dim)}
-details.eff summary{cursor:pointer;color:var(--faint);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
+details.eff summary{
+  cursor:pointer;color:var(--faint);font-size:11.5px;letter-spacing:.06em;
+  text-transform:uppercase;font-weight:700;display:flex;align-items:center;gap:8px;
+}
+details.eff summary::-webkit-details-marker{display:none}
+details.eff summary::before{content:"▸";font-size:10px;transition:transform .15s}
+details.eff[open] summary::before{content:"▾"}
+details.eff summary .count{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500}
+#deadBox{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+#deadBox .empty{padding-top:8px}
 details.eff .row{padding:7px 0;border-bottom:1px solid var(--line);white-space:pre-line;line-height:1.5}
 details.eff .row:last-child{border-bottom:0}
 details.eff .row b{display:block;margin-bottom:2px}
@@ -381,6 +453,11 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
             <button class="btn" id="clearBan">초기화</button>
           </div>
           <p class="empty" style="margin-top:10px;line-height:1.45">밴된 맹약도 인원만 채우면 발동합니다. 가진 맹약이 <b>전부</b> 밴 목록에 들어간 오퍼레이터만 사용 불가가 됩니다.</p>
+          <details class="eff" id="deadBox">
+            <summary>밴된 오퍼레이터 <span class="count" id="deadCount">0명</span></summary>
+            <div class="oplist" id="deadOps" style="padding-top:9px"></div>
+            <p class="empty" id="deadHint">아직 밴된 오퍼레이터가 없습니다.</p>
+          </details>
         </div>
       </section>
 
@@ -393,20 +470,6 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
         </div>
       </section>
 
-      <section class="panel">
-        <div class="ph"><h2>제외 오퍼레이터</h2><span class="count" id="exCount">0명</span></div>
-        <div class="pb">
-          <div class="oplist" id="exChips"></div>
-          <input type="search" id="exSearch" placeholder="제외할 오퍼레이터 검색" style="width:100%;margin-top:10px;font:inherit;font-size:12.5px;padding:6px 9px;background:var(--panel);color:var(--text);border:1px solid var(--line)">
-          <div class="picklist" id="exList"></div>
-          <p class="empty" style="margin-top:8px;line-height:1.45">여기 넣은 오퍼레이터는 조합 계산에서 완전히 빠집니다. 특정 오퍼가 모든 추천에 끼어들 때 쓰세요.</p>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="ph"><h2>밴된 오퍼레이터</h2><span class="count" id="deadCount">0명</span></div>
-        <div class="pb"><div class="oplist" id="deadOps"></div><p class="empty" id="deadHint">아직 밴된 오퍼레이터가 없습니다.</p></div>
-      </section>
 
     </div>
 
@@ -421,11 +484,9 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
         <div class="filters">
           <label for="fMin">최소 발동</label>
           <select id="fMin"><option value="0">전체</option><option value="4">4개+</option><option value="5">5개+</option><option value="6">6개+</option><option value="7">7개+</option></select>
-          <label class="chk"><input type="checkbox" id="fApex"> 핵심 MAX 달성만</label>
-          <label class="chk"><input type="checkbox" id="fCoreCap" checked> 핵심 초과 숨기기</label>
-          <label class="chk"><input type="checkbox" id="fReqFav"> 우선 맹약 필수</label>
+          <label class="chk"><input type="checkbox" id="fApex" checked> 핵심 MAX 달성만</label>
           <label for="perPage">쪽당</label>
-          <select id="perPage"><option value="10">10개</option><option value="20" selected>20개</option><option value="50">50개</option></select>
+          <select id="perPage"><option value="10" selected>10개</option><option value="20">20개</option><option value="50">50개</option></select>
           <button class="btn primary" id="runBtn" style="margin-left:auto">조합 계산</button>
         </div>
         <div class="cond" role="group" aria-label="편성 조건">
@@ -433,6 +494,12 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
             <span class="ck">핵심 맹약 집중</span>
             <div class="pillset" role="group" aria-label="핵심 맹약 집중">
               <button id="cf1" aria-pressed="true">1개</button><button id="cf2" aria-pressed="false">2개</button><button id="cf0" aria-pressed="false">제한 없음</button>
+            </div>
+          </div>
+          <div class="cf" title="최종 단계를 넘겨 더 쌓은 중첩을 점수에 얼마나 반영할지 정합니다. 중첩 수 자체가 효과에 쓰이는 맹약을 노릴 때 올리세요.">
+            <span class="ck">초과 중첩 반영</span>
+            <div class="pillset" role="group" aria-label="초과 중첩 반영">
+              <button id="ov0" aria-pressed="false">없음</button><button id="ov1" aria-pressed="true">보통</button><button id="ov2" aria-pressed="false">높음</button>
             </div>
           </div>
           <div class="cf" title="오퍼레이터 티어를 점수에 얼마나 반영할지 정합니다. '없음'이면 맹약만 보고, 높일수록 같은 시너지를 만들 수 있을 때 고티어 오퍼를 우선합니다.">
@@ -457,7 +524,7 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
           </div>
           <p class="condnote">값을 바꾼 뒤 <b>조합 계산</b>을 다시 눌러야 반영됩니다.</p>
         </div>
-        <div class="bandhead"><h3>우선 맹약</h3><span>고른 맹약을 축으로 삼는 조합이 위로 올라옵니다. 반드시 발동시키려면 위의 <b>우선 맹약 필수</b>를 켜세요.</span></div>
+        <div class="bandhead"><h3>우선 맹약</h3><span>고르면 <b>그 맹약이 발동한 조합만</b> 남고, 그 맹약을 깊게 미는 쪽이 위로 올라옵니다.</span></div>
         <div class="favband">
           <div class="favrow">
             <span class="ck core">핵심 · 1개</span>
@@ -472,6 +539,18 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
             <button class="btn" id="clearFav">지정 해제</button>
           </div>
         </div>
+        <details class="eff opband" id="opBox" open>
+          <summary>오퍼레이터 지정 <span class="count" id="exCount">고정 0 · 제외 0</span></summary>
+          <div class="opbandbody">
+            <div id="exChips"></div>
+            <div class="oprow">
+              <input type="search" id="exSearch" placeholder="오퍼레이터 검색">
+              <button class="btn" id="clearOps">지정 초기화</button>
+            </div>
+            <div class="picklist" id="exList"></div>
+            <p class="empty"><b>고정</b>은 반드시 덱에 넣고 나머지를 채웁니다 — 꼭 필요한 파츠에 쓰세요. <b>제외</b>는 계산에서 완전히 뺍니다.</p>
+          </div>
+        </details>
         <div id="recoWrap"></div>
         <div id="resultList"></div>
         <div class="pager" id="pager"></div>
@@ -521,7 +600,7 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
 
 <script>
 "use strict";
-const DATA = {"season": "시즌2 상반기", "covenants": [{"id": "C01", "name": "염국", "type": "core", "tiers": [3, 6, 9], "desc": "[염국] 오퍼레이터의 공격력 증가 (3)\n'염의 가호' 소환 (6)\n'염의 가호'의 공격력 1.5배, 받는 데미지 -90%, 2개 소환  (9)"}, {"id": "C02", "name": "사르곤", "type": "core", "tiers": [3, 6], "desc": "[사르곤] 오퍼레이터가 스킬 발동 시 모든 [사르곤] 오퍼레이터의 공격 속도 증가 (3)\n스킬 발동 시 동일한 지속 시간 동안 모든 [사르곤] 오퍼레이터의 공격력 증가 (6)"}, {"id": "C03", "name": "빅토리아", "type": "core", "tiers": [3, 6], "desc": "장비를 장착한 [빅토리아] 오퍼레이터가 입히는 데미지 증가 / <중첩 수 25회당> 랜덤 효과의 빅토리아 해머 1개 획득 (3)\n장비를 장착한 [빅토리아] 오퍼레이터의 공격력 증가, 승급 장비일 경우 추가로 증가 (6)"}, {"id": "C04", "name": "쉐라그", "type": "core", "tiers": [3, 6], "desc": "[쉐라그] 오퍼레이터가 입히는 대미지 증가, 냉기 및 빙결 상태의 적에게 추가로 증가 (3)\n25초마다 전장에 찬바람이 불어 적에게 일정 시간 냉기 효과 부여 (6)"}, {"id": "C05", "name": "라테라노", "type": "core", "tiers": [3, 6], "desc": "[라테라노] 오퍼레이터가 스킬 발동 시 획득하는 탄약 증가 (3)\n[라테라노] 오퍼레이터가 소모하는 탄약 1발당 모든 [라테라노] 오퍼레이터의 공격력 증가 (6)"}, {"id": "C06", "name": "에기르", "type": "core", "tiers": [3, 5], "desc": "[에기르] 오퍼레이터의 HP 증가. 전투 시작 후, [에기르] 오퍼레이터가 전방 1칸의 오퍼레이터를 포식해 5000의 물리 데미지를 입히고, 상대의 기본 공격력과 저지 가능 수 획득, 포식당한 오퍼레이터의 티어만큼 [에기르]의 맹약 중첩 수 증가 (3)\n최초로 쓰러진 [에기르] 오퍼레이터 3명 즉시 부활 (5)"}, {"id": "C07", "name": "시라쿠사", "type": "core", "tiers": [3, 6], "desc": "[시라쿠사] 오퍼레이터가 배치 후 공격 속도 증가, 일정 시간 지속 (3)\n[시라쿠사] 오퍼레이터가 배치 후 같은 시간 동안 은신 효과 획득, [시라쿠사] 오퍼레이터가 은신 효과 획득 또는 해제 후 10초간 3% 확률로 적에게 일정량의 트루 데미지를 입히며, 3초간 공포 효과 부여 (6)"}, {"id": "C08", "name": "카시미어", "type": "core", "tiers": [3, 6], "desc": "오퍼레이터를 배치할 때마다 [카시미어] 오퍼레이터의 공격력 +20% (3)\n[카시미어] 오퍼레이터가 적 저지 시 2초마다 주변 적에게 공격력의 120%에 해당하는 트루 대미지를 입히고 0.1초간 기절시킴, 적 미저지 시 공격력의 30%에 해당하는 트루 대미지를 입힘 (6)"}, {"id": "A01", "name": "정밀", "type": "aux", "tiers": [2, 3], "desc": "[정밀] 오퍼레이터의 공격력 증가 (2)\n모든 [정밀] 및 원거리 오퍼레이터에게 효과 적용, 공격이 일정량의 방어력 및 마법 저항 무시 (3)"}, {"id": "A02", "name": "신속", "type": "aux", "tiers": [2], "desc": "[신속] 오퍼레이터가 스킬 종료 시 일정 확률로 SP +12. <중첩 수 40회 달성> 모든 오퍼레이터가 스킬 종료 시 같은 확률로 추가로 SP +15 (2)"}, {"id": "A03", "name": "기민", "type": "aux", "tiers": [2], "desc": "[기민] 자신 및 주변 4칸 오퍼레이터의 공격 속도 증가. <중첩 수 40회 달성> 범위가 [기민] 오퍼레이터 주변 8칸으로 변경 (2)"}, {"id": "A04", "name": "아케인", "type": "aux", "tiers": [2, 3], "desc": "[아케인] 오퍼레이터가 마법 대미지를 입힐 경우 목표가 받는 마법 대미지 증가 (2)\n[아케인] 오퍼레이터가 HP 50% 미만인 적에게 입히는 대미지 비율이 증가 (3)"}, {"id": "A05", "name": "고수", "type": "aux", "tiers": [2, 3], "desc": "모든 오퍼레이터의 HP 증가 (2)\n[고수]가 아닌 오퍼레이터가 받는 대미지의 40%를 모든 [고수] 오퍼레이터가 분담. [고수] 오퍼레이터가 대미지를 받을 시 대미지를 입힌 적에게 일정량의 마법 대미지를 입히고 5초간 40%의 취약 효과 부여 (3)"}, {"id": "A06", "name": "조력", "type": "aux", "tiers": [2, 3], "desc": "모든 오퍼레이터의 방어력 증가, 재배치 시간 감소. 휴식 기간 종류 후 활성화된 모든 맹약의 중첩 수 +2 (2)\n중첩 수 증가량이 +4로 변경 (3)"}, {"id": "A07", "name": "예견", "type": "aux", "tiers": [2], "desc": "<중첩 수 10회당> 자금 2 획득. <최초로 80회 중첩> 모든 [예견] 오퍼레이터의 구매 가격 영구 -1. <최초로 150회 중첩> 상기 효과가 보급센터 내 모든 오퍼레이터의 구매 가격 영구 -1로 변경 (정비 구역의 [예견] 오퍼레이터도 맹약 활성화 가능) (2)"}, {"id": "A08", "name": "기적", "type": "aux", "tiers": [2], "desc": "보급센터를 갱신할 시 일정 확률로 다음 갱신이 무료. <중첩 수 100회당> 자금 20획득 (정비 구역의 [기적] 오퍼레이터도 맹약 활성화 가능) (2)"}, {"id": "A09", "name": "투자자", "type": "aux", "tiers": [3], "desc": "오퍼레이터의 '획득 시' 특질이 매번 2회 발동. <중첩 수 100회 달성> '획득 시' 특질이 매번 3회 발동 (정비 구역의 [투자자] 오퍼레이터도 맹약 활성화 가능) (3)"}, {"id": "A10", "name": "기습", "type": "aux", "tiers": [2], "desc": "[기습] 오퍼레이터가 10초간 공격하지 않거나 스킬이 준비될 경우, 공격 범위에 적이 없으면 SP를 보류하고 즉시 지상 적 1명에게 이동, 해당 기간 동안 공격력 및 HP 증가. <중첩 수 50회 달성> 모든 오퍼레이터의 공격 속도 +50 (2)"}, {"id": "A11", "name": "불굴", "type": "aux", "tiers": [2, 3], "desc": "지상 오퍼레이터가 쓰러질 경우 일정 확률로 즉시 부활 (2)\n지상 오퍼레이터가 쓰러질 경우 모든 오퍼레이터의 SP +5 (3)"}, {"id": "A12", "name": "조화", "type": "aux", "tiers": [1], "desc": "활성화 시 전장에 있는 핵심 맹약의 활성화 인원 수 +1, [조화] 오퍼레이터는 상기 활성화된 핵심 맹약의 효과 획득 (1)"}, {"id": "A13", "name": "협동방어", "type": "aux", "tiers": [2], "desc": "모든 오퍼레이터가 받는 물리 및 마법 대미지 -20%, [협동방어] 오퍼레이터가 입히는 대미지가 120%로 증가, 정예화 상태인 [협동방어] 오퍼레이터의 경우 입히는 대미지가 140%로 증가 (2)"}, {"id": "A14", "name": "독행", "type": "aux", "tiers": [1], "desc": "[독행] 오퍼레이터의 공격력 및 HP +60%, 초기 sp +15 ([독행] 오퍼레이터 2명 이상 배치 시 무효) (1)"}, {"id": "A15", "name": "궁극기", "type": "aux", "tiers": [2, 5], "desc": "정예화 오퍼레이터의 공격력 +30% (2)\n정예화 오퍼레이터의 SP 소모 -30% (5)"}], "operators": [{"name": "인사이더", "grade": 1, "cost": 12, "tags": ["라테라노", "신속"]}, {"name": "레이즈", "grade": 1, "cost": 32, "tags": ["염국"]}, {"name": "벤델라", "grade": 1, "cost": 16, "tags": ["빅토리아", "조력"]}, {"name": "텍사스", "grade": 1, "cost": 12, "tags": ["시라쿠사", "독행"]}, {"name": "굼", "grade": 1, "cost": 18, "tags": ["고수"]}, {"name": "포덴코", "grade": 1, "cost": 12, "tags": ["조력"]}, {"name": "인디고", "grade": 1, "cost": 21, "tags": ["정밀", "아케인"]}, {"name": "와일드메인", "grade": 1, "cost": 11, "tags": ["카시미어", "신속"]}, {"name": "마터호른", "grade": 1, "cost": 19, "tags": ["쉐라그", "고수"]}, {"name": "언더플로우", "grade": 1, "cost": 22, "tags": ["에기르"]}, {"name": "프로방스", "grade": 1, "cost": 18, "tags": ["시라쿠사"]}, {"name": "케이퍼", "grade": 1, "cost": 14, "tags": ["정밀"]}, {"name": "에스텔", "grade": 1, "cost": 20, "tags": ["사르곤"]}, {"name": "그레이", "grade": 1, "cost": 22, "tags": ["기민"]}, {"name": "우타게", "grade": 1, "cost": 22, "tags": ["기습"]}, {"name": "리스캄", "grade": 1, "cost": 21, "tags": ["불굴"]}, {"name": "이그제큐터", "grade": 2, "cost": 30, "tags": ["라테라노", "정밀"]}, {"name": "그레인버즈", "grade": 2, "cost": 13, "tags": ["염국", "기민"]}, {"name": "파피루스", "grade": 2, "cost": 17, "tags": ["사르곤"]}, {"name": "버블", "grade": 2, "cost": 19, "tags": ["사르곤", "고수"]}, {"name": "락락", "grade": 2, "cost": 19, "tags": ["빅토리아", "아케인"]}, {"name": "그라벨", "grade": 2, "cost": 6, "tags": ["카시미어", "불굴"]}, {"name": "퍼퓨머", "grade": 2, "cost": 14, "tags": ["조력", "협동방어"]}, {"name": "베토치키", "grade": 2, "cost": 35, "tags": ["고수", "독행"]}, {"name": "틴맨", "grade": 2, "cost": 16, "tags": ["신속", "투자자"]}, {"name": "사일런스", "grade": 2, "cost": 17, "tags": ["예견"]}, {"name": "해럴드", "grade": 2, "cost": 14, "tags": ["빅토리아", "쉐라그"]}, {"name": "스펙터", "grade": 2, "cost": 22, "tags": ["에기르"]}, {"name": "휴머스", "grade": 2, "cost": 19, "tags": ["기습"]}, {"name": "카제마루", "grade": 2, "cost": 13, "tags": ["기적"]}, {"name": "티피", "grade": 2, "cost": 16, "tags": ["신속", "기민"]}, {"name": "라플란드", "grade": 2, "cost": 18, "tags": ["시라쿠사"]}, {"name": "애쉬락", "grade": 2, "cost": 27, "tags": ["카시미어", "고수"]}, {"name": "엑시아", "grade": 3, "cost": 14, "tags": ["라테라노", "기적"]}, {"name": "스와이어", "grade": 3, "cost": 14, "tags": ["염국", "예견"]}, {"name": "스카디", "grade": 3, "cost": 19, "tags": ["에기르", "고수", "기습"]}, {"name": "민트", "grade": 3, "cost": 22, "tags": ["빅토리아"]}, {"name": "파인콘", "grade": 3, "cost": 28, "tags": ["신속", "협동방어"]}, {"name": "블레미샤인", "grade": 3, "cost": 21, "tags": ["카시미어", "기습"]}, {"name": "프라마닉스", "grade": 3, "cost": 12, "tags": ["쉐라그", "예견"]}, {"name": "메테오", "grade": 3, "cost": 10, "tags": ["카시미어", "독행"]}, {"name": "비질", "grade": 3, "cost": 14, "tags": ["시라쿠사", "기적"]}, {"name": "아르케토", "grade": 3, "cost": 13, "tags": ["라테라노", "기민"]}, {"name": "에이어스카르페", "grade": 3, "cost": 18, "tags": ["기민"]}, {"name": "스와이어 디 엘리건트 위트", "grade": 3, "cost": 7, "tags": ["염국", "투자자"]}, {"name": "필라에", "grade": 3, "cost": 25, "tags": ["사르곤"]}, {"name": "루실라", "grade": 3, "cost": 10, "tags": ["에기르", "아케인"]}, {"name": "스노우헌터", "grade": 3, "cost": 17, "tags": ["쉐라그", "정밀"]}, {"name": "미니멀리스트", "grade": 3, "cost": 20, "tags": ["사르곤", "기민"]}, {"name": "쿠오라", "grade": 3, "cost": 19, "tags": ["고수", "불굴"]}, {"name": "불피스폴리아", "grade": 3, "cost": 13, "tags": ["시라쿠사", "신속"]}, {"name": "쉐라", "grade": 3, "cost": 20, "tags": ["쉐라그", "조력"]}, {"name": "산크타 믹사파라토", "grade": 4, "cost": 22, "tags": ["라테라노", "고수"]}, {"name": "이네스", "grade": 4, "cost": 10, "tags": ["예견", "기습"]}, {"name": "백파이프", "grade": 4, "cost": 11, "tags": ["빅토리아", "예견", "불굴"]}, {"name": "아로마", "grade": 4, "cost": 32, "tags": ["시라쿠사", "아케인"]}, {"name": "글래디아", "grade": 4, "cost": 13, "tags": ["에기르"]}, {"name": "레온하르트", "grade": 4, "cost": 33, "tags": ["정밀", "신속"]}, {"name": "호시구마", "grade": 4, "cost": 22, "tags": ["염국"]}, {"name": "플레임테일", "grade": 4, "cost": 13, "tags": ["카시미어"]}, {"name": "프틸롭시스", "grade": 4, "cost": 15, "tags": ["기민", "조력"]}, {"name": "가비알 디 인빈서블", "grade": 4, "cost": 24, "tags": ["사르곤"]}, {"name": "시빌라이트 에테르나", "grade": 4, "cost": 8, "tags": ["협동방어"]}, {"name": "모스티마", "grade": 4, "cost": 26, "tags": ["라테라노", "아케인"]}, {"name": "크루스 더 킨 글린트", "grade": 4, "cost": 12, "tags": ["정밀"]}, {"name": "미즈키", "grade": 4, "cost": 20, "tags": ["에기르", "독행"]}, {"name": "캐서린", "grade": 4, "cost": 17, "tags": ["빅토리아", "기민"]}, {"name": "노시스", "grade": 4, "cost": 12, "tags": ["쉐라그", "기민"]}, {"name": "텍사스 디 오메르토사", "grade": 4, "cost": 8, "tags": ["시라쿠사", "기습"]}, {"name": "머드락", "grade": 4, "cost": 35, "tags": ["독행"]}, {"name": "파투스", "grade": 4, "cost": 22, "tags": ["카시미어", "정밀"]}, {"name": "실버애쉬", "grade": 4, "cost": 19, "tags": ["쉐라그"]}, {"name": "카넬리안", "grade": 4, "cost": 24, "tags": ["사르곤", "조력"]}, {"name": "와파린", "grade": 4, "cost": 18, "tags": ["기적"]}, {"name": "님프", "grade": 5, "cost": 21, "tags": ["신속"]}, {"name": "티티", "grade": 5, "cost": 17, "tags": ["사르곤", "정밀"]}, {"name": "울피아누스", "grade": 5, "cost": 23, "tags": ["에기르"]}, {"name": "수르트", "grade": 5, "cost": 22, "tags": ["아케인", "기습"]}, {"name": "스즈란", "grade": 5, "cost": 15, "tags": ["시라쿠사", "협동방어"]}, {"name": "시", "grade": 5, "cost": 34, "tags": ["염국", "아케인"]}, {"name": "실버애쉬 더 레인프로스트", "grade": 5, "cost": 12, "tags": ["쉐라그", "신속", "투자자"]}, {"name": "마운틴", "grade": 5, "cost": 10, "tags": ["투자자"]}, {"name": "안젤리나", "grade": 5, "cost": 15, "tags": ["시라쿠사", "기적"]}, {"name": "레코드키퍼", "grade": 5, "cost": 18, "tags": ["염국", "기적"]}, {"name": "이그제큐터 디 엑스 포에데레", "grade": 5, "cost": 23, "tags": ["라테라노", "예견"]}, {"name": "블레이즈 디 이그나이팅 스파크", "grade": 5, "cost": 20, "tags": ["염국", "빅토리아"]}, {"name": "엔텔레키아", "grade": 5, "cost": 23, "tags": ["기민", "불굴"]}, {"name": "혼", "grade": 5, "cost": 28, "tags": ["빅토리아"]}, {"name": "사리아", "grade": 5, "cost": 22, "tags": ["고수", "독행"]}, {"name": "스펙터 디 언체인드", "grade": 5, "cost": 16, "tags": ["에기르", "불굴"]}, {"name": "쏜즈 더 로드스타", "grade": 5, "cost": 18, "tags": ["신속", "기적"]}, {"name": "무에나", "grade": 5, "cost": 11, "tags": ["카시미어"]}, {"name": "산탈라", "grade": 5, "cost": 23, "tags": ["예견"]}, {"name": "르무엔", "grade": 6, "cost": 22, "tags": ["라테라노", "정밀"]}, {"name": "위", "grade": 6, "cost": 25, "tags": ["염국", "고수"]}, {"name": "패신저", "grade": 6, "cost": 33, "tags": ["사르곤", "정밀", "신속"]}, {"name": "비나 빅토리아", "grade": 6, "cost": 21, "tags": ["빅토리아", "기적"]}, {"name": "비르투오사", "grade": 6, "cost": 15, "tags": ["라테라노"]}, {"name": "로즈몬티스", "grade": 6, "cost": 25, "tags": ["정밀", "예견", "협동방어"]}, {"name": "루멘", "grade": 6, "cost": 20, "tags": ["조력"]}, {"name": "아스트젠 더 라이트체이서", "grade": 6, "cost": 15, "tags": ["기민", "아케인"]}, {"name": "라플란드 더 데카덴차", "grade": 6, "cost": 21, "tags": ["시라쿠사"]}, {"name": "에이야퍄들라 더 크비트아스카", "grade": 6, "cost": 15, "tags": ["조력"]}, {"name": "프라마닉스 더 프레리타", "grade": 6, "cost": 24, "tags": ["쉐라그", "아케인"]}, {"name": "스카디 더 커럽팅 하트", "grade": 6, "cost": 7, "tags": ["에기르"]}, {"name": "페페", "grade": 6, "cost": 20, "tags": ["사르곤", "불굴"]}, {"name": "리드 더 플레임 섀도우", "grade": 6, "cost": 16, "tags": ["빅토리아", "정밀"]}, {"name": "뮤엘시스", "grade": 6, "cost": 14, "tags": ["조화"]}, {"name": "엑시아 더 뉴 커버넌트", "grade": 6, "cost": 12, "tags": ["라테라노"]}, {"name": "치우바이", "grade": 6, "cost": 20, "tags": ["염국", "기습"]}, {"name": "니어 더 래디언트 나이트", "grade": 6, "cost": 19, "tags": ["카시미어", "기습"]}, {"name": "데겐블레허", "grade": 6, "cost": 22, "tags": ["쉐라그", "카시미어", "신속"]}], "picks": [{"name": "사가", "grade": 0, "cost": 14, "tags": ["협동방어"], "pick": true}, {"name": "시즈", "grade": 0, "cost": 13, "tags": ["빅토리아"], "pick": true}, {"name": "레이즈 더 썬더브링어", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "블레이즈", "grade": 0, "cost": 23, "tags": ["염국", "빅토리아"], "pick": true}, {"name": "쏜즈", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "외드레르", "grade": 0, "cost": 23, "tags": ["협동방어"], "pick": true}, {"name": "첸", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "팔라스", "grade": 0, "cost": 17, "tags": ["협동방어"], "pick": true}, {"name": "니엔", "grade": 0, "cost": 23, "tags": ["염국"], "pick": true}, {"name": "유넥티스", "grade": 0, "cost": 32, "tags": ["사르곤"], "pick": true}, {"name": "페넌스", "grade": 0, "cost": 34, "tags": ["시라쿠사"], "pick": true}, {"name": "Ash", "grade": 0, "cost": 14, "tags": ["협동방어"], "pick": true}, {"name": "나란투야", "grade": 0, "cost": 16, "tags": ["사르곤"], "pick": true}, {"name": "로사", "grade": 0, "cost": 23, "tags": ["협동방어"], "pick": true}, {"name": "위셔델", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "티폰", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "피아메타", "grade": 0, "cost": 29, "tags": ["라테라노"], "pick": true}, {"name": "네크라스", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "린", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "만트라", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "에이야퍄들라", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "이프리트", "grade": 0, "cost": 34, "tags": ["협동방어"], "pick": true}, {"name": "Mon3tr", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "샤이닝", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "내스티", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "링", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "사일런스 더 패러디그매틱", "grade": 0, "cost": 12, "tags": ["협동방어"], "pick": true}, {"name": "트라고디아", "grade": 0, "cost": 16, "tags": ["빅토리아"], "pick": true}, {"name": "Ela", "grade": 0, "cost": 11, "tags": ["협동방어"], "pick": true}, {"name": "리", "grade": 0, "cost": 9, "tags": ["염국"], "pick": true}, {"name": "아스카론", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "위디", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "키린R 야토", "grade": 0, "cost": 10, "tags": ["협동방어"], "pick": true}, {"name": "첸 더 던스트릭", "grade": 0, "cost": 21, "tags": ["염국"], "pick": true}, {"name": "토가와 사키코", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "사일라흐", "grade": 0, "cost": 11, "tags": ["빅토리아"], "pick": true}, {"name": "레싱", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "벨로네", "grade": 0, "cost": 11, "tags": ["시라쿠사"], "pick": true}, {"name": "비비아나", "grade": 0, "cost": 21, "tags": ["카시미어"], "pick": true}, {"name": "아이린", "grade": 0, "cost": 22, "tags": ["협동방어"], "pick": true}, {"name": "좌락", "grade": 0, "cost": 26, "tags": ["염국"], "pick": true}, {"name": "총웨", "grade": 0, "cost": 11, "tags": ["염국"], "pick": true}, {"name": "헬라그", "grade": 0, "cost": 26, "tags": ["협동방어"], "pick": true}, {"name": "슈", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "제시카 더 리버레이티드", "grade": 0, "cost": 22, "tags": ["빅토리아"], "pick": true}, {"name": "호시구마 더 브리처", "grade": 0, "cost": 26, "tags": ["염국"], "pick": true}, {"name": "W", "grade": 0, "cost": 29, "tags": ["협동방어"], "pick": true}, {"name": "레이", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "슈바르츠", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "첸 더 홀룽데이", "grade": 0, "cost": 31, "tags": ["염국"], "pick": true}, {"name": "파죰카", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "골든글로우", "grade": 0, "cost": 22, "tags": ["빅토리아"], "pick": true}, {"name": "로고스", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "마르실", "grade": 0, "cost": 33, "tags": ["협동방어"], "pick": true}, {"name": "에벤홀츠", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "오올헤약", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "케오베", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "나이팅게일", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "켈시", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "라이디언", "grade": 0, "cost": 10, "tags": ["협동방어"], "pick": true}, {"name": "마젤란", "grade": 0, "cost": 11, "tags": ["협동방어"], "pick": true}, {"name": "스테인리스", "grade": 0, "cost": 19, "tags": ["빅토리아"], "pick": true}, {"name": "하루카", "grade": 0, "cost": 13, "tags": ["협동방어"], "pick": true}, {"name": "도로시", "grade": 0, "cost": 12, "tags": ["협동방어"], "pick": true}, {"name": "아", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "왕", "grade": 0, "cost": 10, "tags": ["염국"], "pick": true}, {"name": "크라운슬레이어", "grade": 0, "cost": 9, "tags": ["시라쿠사"], "pick": true}, {"name": "팬텀", "grade": 0, "cost": 10, "tags": ["빅토리아"], "pick": true}]};
+const DATA = {"season": "시즌2 하반기", "covenants": [{"id": "C01", "name": "염국", "type": "core", "tiers": [3, 6, 9], "desc": "[염국] 오퍼레이터의 공격력 증가 (3)\n'염의 가호' 소환 (6)\n'염의 가호'의 공격력 1.5배, 받는 데미지 -90%, 2개 소환  (9)"}, {"id": "C02", "name": "사르곤", "type": "core", "tiers": [3, 6], "desc": "[사르곤] 오퍼레이터가 스킬 발동 시 모든 [사르곤] 오퍼레이터의 공격 속도 증가 (3)\n스킬 발동 시 동일한 지속 시간 동안 모든 [사르곤] 오퍼레이터의 공격력 증가 (6)"}, {"id": "C03", "name": "빅토리아", "type": "core", "tiers": [3, 6], "desc": "장비를 장착한 [빅토리아] 오퍼레이터가 입히는 데미지 증가 / <중첩 수 25회당> 랜덤 효과의 빅토리아 해머 1개 획득 (3)\n장비를 장착한 [빅토리아] 오퍼레이터의 공격력 증가, 승급 장비일 경우 추가로 증가 (6)"}, {"id": "C04", "name": "쉐라그", "type": "core", "tiers": [3, 6], "desc": "[쉐라그] 오퍼레이터가 입히는 대미지 증가, 냉기 및 빙결 상태의 적에게 추가로 증가 (3)\n25초마다 전장에 찬바람이 불어 적에게 일정 시간 냉기 효과 부여 (6)"}, {"id": "C05", "name": "라테라노", "type": "core", "tiers": [3, 6], "desc": "[라테라노] 오퍼레이터가 스킬 발동 시 획득하는 탄약 증가 (3)\n[라테라노] 오퍼레이터가 소모하는 탄약 1발당 모든 [라테라노] 오퍼레이터의 공격력 증가 (6)"}, {"id": "C06", "name": "에기르", "type": "core", "tiers": [3, 5], "desc": "[에기르] 오퍼레이터의 HP 증가. 전투 시작 후, [에기르] 오퍼레이터가 전방 1칸의 오퍼레이터를 포식해 5000의 물리 데미지를 입히고, 상대의 기본 공격력과 저지 가능 수 획득, 포식당한 오퍼레이터의 티어만큼 [에기르]의 맹약 중첩 수 증가 (3)\n최초로 쓰러진 [에기르] 오퍼레이터 3명 즉시 부활 (5)"}, {"id": "C07", "name": "시라쿠사", "type": "core", "tiers": [3, 6], "desc": "[시라쿠사] 오퍼레이터가 배치 후 공격 속도 증가, 일정 시간 지속 (3)\n[시라쿠사] 오퍼레이터가 배치 후 같은 시간 동안 은신 효과 획득, [시라쿠사] 오퍼레이터가 은신 효과 획득 또는 해제 후 10초간 3% 확률로 적에게 일정량의 트루 데미지를 입히며, 3초간 공포 효과 부여 (6)"}, {"id": "C08", "name": "카시미어", "type": "core", "tiers": [3, 6], "desc": "오퍼레이터를 배치할 때마다 [카시미어] 오퍼레이터의 공격력 +20% (3)\n[카시미어] 오퍼레이터가 적 저지 시 2초마다 주변 적에게 공격력의 120%에 해당하는 트루 대미지를 입히고 0.1초간 기절시킴, 적 미저지 시 공격력의 30%에 해당하는 트루 대미지를 입힘 (6)"}, {"id": "A01", "name": "정밀", "type": "aux", "tiers": [2, 3], "desc": "[정밀] 오퍼레이터의 공격력 증가 (2)\n모든 [정밀] 및 원거리 오퍼레이터에게 효과 적용, 공격이 일정량의 방어력 및 마법 저항 무시 (3)"}, {"id": "A02", "name": "신속", "type": "aux", "tiers": [2], "desc": "[신속] 오퍼레이터가 스킬 종료 시 일정 확률로 SP +12. <중첩 수 40회 달성> 모든 오퍼레이터가 스킬 종료 시 같은 확률로 추가로 SP +15 (2)"}, {"id": "A03", "name": "기민", "type": "aux", "tiers": [2], "desc": "[기민] 자신 및 주변 4칸 오퍼레이터의 공격 속도 증가. <중첩 수 40회 달성> 범위가 [기민] 오퍼레이터 주변 8칸으로 변경 (2)"}, {"id": "A04", "name": "아케인", "type": "aux", "tiers": [2, 3], "desc": "[아케인] 오퍼레이터가 마법 대미지를 입힐 경우 목표가 받는 마법 대미지 증가 (2)\n[아케인] 오퍼레이터가 HP 50% 미만인 적에게 입히는 대미지 비율이 증가 (3)"}, {"id": "A05", "name": "고수", "type": "aux", "tiers": [2, 3], "desc": "모든 오퍼레이터의 HP 증가 (2)\n[고수]가 아닌 오퍼레이터가 받는 대미지의 40%를 모든 [고수] 오퍼레이터가 분담. [고수] 오퍼레이터가 대미지를 받을 시 대미지를 입힌 적에게 일정량의 마법 대미지를 입히고 5초간 40%의 취약 효과 부여 (3)"}, {"id": "A06", "name": "조력", "type": "aux", "tiers": [2, 3], "desc": "모든 오퍼레이터의 방어력 증가, 재배치 시간 감소. 휴식 기간 종류 후 활성화된 모든 맹약의 중첩 수 +2 (2)\n중첩 수 증가량이 +4로 변경 (3)"}, {"id": "A07", "name": "예견", "type": "aux", "tiers": [2], "desc": "<중첩 수 10회당> 자금 2 획득. <최초로 80회 중첩> 모든 [예견] 오퍼레이터의 구매 가격 영구 -1. <최초로 150회 중첩> 상기 효과가 보급센터 내 모든 오퍼레이터의 구매 가격 영구 -1로 변경 (정비 구역의 [예견] 오퍼레이터도 맹약 활성화 가능) (2)"}, {"id": "A08", "name": "기적", "type": "aux", "tiers": [2], "desc": "보급센터를 갱신할 시 일정 확률로 다음 갱신이 무료. <중첩 수 100회당> 자금 20획득 (정비 구역의 [기적] 오퍼레이터도 맹약 활성화 가능) (2)"}, {"id": "A09", "name": "투자자", "type": "aux", "tiers": [3], "desc": "오퍼레이터의 '획득 시' 특질이 매번 2회 발동. <중첩 수 100회 달성> '획득 시' 특질이 매번 3회 발동 (정비 구역의 [투자자] 오퍼레이터도 맹약 활성화 가능) (3)"}, {"id": "A10", "name": "기습", "type": "aux", "tiers": [2], "desc": "[기습] 오퍼레이터가 10초간 공격하지 않거나 스킬이 준비될 경우, 공격 범위에 적이 없으면 SP를 보류하고 즉시 지상 적 1명에게 이동, 해당 기간 동안 공격력 및 HP 증가. <중첩 수 50회 달성> 모든 오퍼레이터의 공격 속도 +50 (2)"}, {"id": "A11", "name": "불굴", "type": "aux", "tiers": [2, 3], "desc": "지상 오퍼레이터가 쓰러질 경우 일정 확률로 즉시 부활 (2)\n지상 오퍼레이터가 쓰러질 경우 모든 오퍼레이터의 SP +5 (3)"}, {"id": "A12", "name": "조화", "type": "aux", "tiers": [1], "desc": "활성화 시 전장에 있는 핵심 맹약의 활성화 인원 수 +1, [조화] 오퍼레이터는 상기 활성화된 핵심 맹약의 효과 획득 (1)"}, {"id": "A13", "name": "협동방어", "type": "aux", "tiers": [2], "desc": "모든 오퍼레이터가 받는 물리 및 마법 대미지 -20%, [협동방어] 오퍼레이터가 입히는 대미지가 120%로 증가, 정예화 상태인 [협동방어] 오퍼레이터의 경우 입히는 대미지가 140%로 증가 (2)"}, {"id": "A14", "name": "독행", "type": "aux", "tiers": [1], "desc": "[독행] 오퍼레이터의 공격력 및 HP +60%, 초기 sp +15 ([독행] 오퍼레이터 2명 이상 배치 시 무효) (1)"}, {"id": "A15", "name": "궁극기", "type": "aux", "tiers": [2, 5], "desc": "정예화 오퍼레이터의 공격력 +30% (2)\n정예화 오퍼레이터의 SP 소모 -30% (5)"}], "operators": [{"name": "인사이더", "grade": 1, "cost": 12, "tags": ["라테라노", "신속"]}, {"name": "레이즈", "grade": 1, "cost": 32, "tags": ["염국"]}, {"name": "벤델라", "grade": 1, "cost": 16, "tags": ["빅토리아", "조력"]}, {"name": "텍사스", "grade": 1, "cost": 12, "tags": ["시라쿠사", "독행"]}, {"name": "굼", "grade": 1, "cost": 18, "tags": ["고수"]}, {"name": "포덴코", "grade": 1, "cost": 12, "tags": ["조력"]}, {"name": "인디고", "grade": 1, "cost": 21, "tags": ["정밀", "아케인"]}, {"name": "와일드메인", "grade": 1, "cost": 11, "tags": ["카시미어", "신속"]}, {"name": "마터호른", "grade": 1, "cost": 19, "tags": ["쉐라그", "고수"]}, {"name": "언더플로우", "grade": 1, "cost": 22, "tags": ["에기르"]}, {"name": "프로방스", "grade": 1, "cost": 18, "tags": ["시라쿠사"]}, {"name": "케이퍼", "grade": 1, "cost": 14, "tags": ["정밀"]}, {"name": "에스텔", "grade": 1, "cost": 20, "tags": ["사르곤"]}, {"name": "그레이", "grade": 1, "cost": 22, "tags": ["기민"]}, {"name": "우타게", "grade": 1, "cost": 22, "tags": ["기습"]}, {"name": "리스캄", "grade": 1, "cost": 21, "tags": ["불굴"]}, {"name": "이그제큐터", "grade": 2, "cost": 30, "tags": ["라테라노", "정밀"]}, {"name": "그레인버즈", "grade": 2, "cost": 13, "tags": ["염국", "기민"]}, {"name": "파피루스", "grade": 2, "cost": 17, "tags": ["사르곤"]}, {"name": "버블", "grade": 2, "cost": 19, "tags": ["사르곤", "고수"]}, {"name": "락락", "grade": 2, "cost": 19, "tags": ["빅토리아", "아케인"]}, {"name": "그라벨", "grade": 2, "cost": 6, "tags": ["카시미어", "불굴"]}, {"name": "퍼퓨머", "grade": 2, "cost": 14, "tags": ["조력", "협동방어"]}, {"name": "베토치키", "grade": 2, "cost": 35, "tags": ["고수", "독행"]}, {"name": "틴맨", "grade": 2, "cost": 16, "tags": ["신속", "투자자"]}, {"name": "사일런스", "grade": 2, "cost": 17, "tags": ["예견"]}, {"name": "해럴드", "grade": 2, "cost": 14, "tags": ["빅토리아", "쉐라그"]}, {"name": "스펙터", "grade": 2, "cost": 22, "tags": ["에기르"]}, {"name": "휴머스", "grade": 2, "cost": 19, "tags": ["기습"]}, {"name": "카제마루", "grade": 2, "cost": 13, "tags": ["기적"]}, {"name": "티피", "grade": 2, "cost": 16, "tags": ["신속", "기민"]}, {"name": "라플란드", "grade": 2, "cost": 18, "tags": ["시라쿠사"]}, {"name": "애쉬락", "grade": 2, "cost": 27, "tags": ["카시미어", "고수"]}, {"name": "엑시아", "grade": 3, "cost": 14, "tags": ["라테라노", "기적"]}, {"name": "스와이어", "grade": 3, "cost": 14, "tags": ["염국", "예견"]}, {"name": "스카디", "grade": 3, "cost": 19, "tags": ["에기르", "고수", "기습"]}, {"name": "민트", "grade": 3, "cost": 22, "tags": ["빅토리아"]}, {"name": "파인콘", "grade": 3, "cost": 28, "tags": ["신속", "협동방어"]}, {"name": "블레미샤인", "grade": 3, "cost": 21, "tags": ["카시미어", "기습"]}, {"name": "프라마닉스", "grade": 3, "cost": 12, "tags": ["쉐라그", "예견"]}, {"name": "메테오", "grade": 3, "cost": 10, "tags": ["카시미어", "독행"]}, {"name": "비질", "grade": 3, "cost": 14, "tags": ["시라쿠사", "기적"]}, {"name": "아르케토", "grade": 3, "cost": 13, "tags": ["라테라노", "기민"]}, {"name": "에이어스카르페", "grade": 3, "cost": 18, "tags": ["기민"]}, {"name": "스와이어 디 엘리건트 위트", "grade": 3, "cost": 7, "tags": ["염국", "투자자"]}, {"name": "필라에", "grade": 3, "cost": 25, "tags": ["사르곤"]}, {"name": "루실라", "grade": 3, "cost": 10, "tags": ["에기르", "아케인"]}, {"name": "스노우헌터", "grade": 3, "cost": 17, "tags": ["쉐라그", "정밀"]}, {"name": "미니멀리스트", "grade": 3, "cost": 20, "tags": ["사르곤", "기민"]}, {"name": "쿠오라", "grade": 3, "cost": 19, "tags": ["고수", "불굴"]}, {"name": "불피스폴리아", "grade": 3, "cost": 13, "tags": ["시라쿠사", "신속"]}, {"name": "쉐라", "grade": 3, "cost": 20, "tags": ["쉐라그", "조력"]}, {"name": "산크타 믹사파라토", "grade": 4, "cost": 22, "tags": ["라테라노", "고수"]}, {"name": "이네스", "grade": 4, "cost": 10, "tags": ["예견", "기습"]}, {"name": "백파이프", "grade": 4, "cost": 11, "tags": ["빅토리아", "예견", "불굴"]}, {"name": "아로마", "grade": 4, "cost": 32, "tags": ["시라쿠사", "아케인"]}, {"name": "글래디아", "grade": 4, "cost": 13, "tags": ["에기르"]}, {"name": "레온하르트", "grade": 4, "cost": 33, "tags": ["정밀", "신속"]}, {"name": "호시구마", "grade": 4, "cost": 22, "tags": ["염국"]}, {"name": "플레임테일", "grade": 4, "cost": 13, "tags": ["카시미어"]}, {"name": "프틸롭시스", "grade": 4, "cost": 15, "tags": ["기민", "조력"]}, {"name": "가비알 디 인빈서블", "grade": 4, "cost": 24, "tags": ["사르곤"]}, {"name": "시빌라이트 에테르나", "grade": 4, "cost": 8, "tags": ["협동방어"]}, {"name": "모스티마", "grade": 4, "cost": 26, "tags": ["라테라노", "아케인"]}, {"name": "크루스 더 킨 글린트", "grade": 4, "cost": 12, "tags": ["정밀"]}, {"name": "미즈키", "grade": 4, "cost": 20, "tags": ["에기르", "독행"]}, {"name": "캐서린", "grade": 4, "cost": 17, "tags": ["빅토리아", "기민"]}, {"name": "노시스", "grade": 4, "cost": 12, "tags": ["쉐라그", "기민"]}, {"name": "텍사스 디 오메르토사", "grade": 4, "cost": 8, "tags": ["시라쿠사", "기습"]}, {"name": "머드락", "grade": 4, "cost": 35, "tags": ["독행"]}, {"name": "파투스", "grade": 4, "cost": 22, "tags": ["카시미어", "정밀"]}, {"name": "실버애쉬", "grade": 4, "cost": 19, "tags": ["쉐라그"]}, {"name": "카넬리안", "grade": 4, "cost": 24, "tags": ["사르곤", "조력"]}, {"name": "와파린", "grade": 4, "cost": 18, "tags": ["기적"]}, {"name": "님프", "grade": 5, "cost": 21, "tags": ["신속"]}, {"name": "티티", "grade": 5, "cost": 17, "tags": ["사르곤", "정밀"]}, {"name": "울피아누스", "grade": 5, "cost": 23, "tags": ["에기르"]}, {"name": "수르트", "grade": 5, "cost": 22, "tags": ["아케인", "기습"]}, {"name": "스즈란", "grade": 5, "cost": 15, "tags": ["시라쿠사", "협동방어"]}, {"name": "시", "grade": 5, "cost": 34, "tags": ["염국", "아케인"]}, {"name": "실버애쉬 더 레인프로스트", "grade": 5, "cost": 12, "tags": ["쉐라그", "신속", "투자자"]}, {"name": "마운틴", "grade": 5, "cost": 10, "tags": ["투자자"]}, {"name": "안젤리나", "grade": 5, "cost": 15, "tags": ["시라쿠사", "기적"]}, {"name": "레코드키퍼", "grade": 5, "cost": 18, "tags": ["염국", "기적"]}, {"name": "이그제큐터 디 엑스 포에데레", "grade": 5, "cost": 23, "tags": ["라테라노", "예견"]}, {"name": "블레이즈 디 이그나이팅 스파크", "grade": 5, "cost": 20, "tags": ["염국", "빅토리아"]}, {"name": "엔텔레키아", "grade": 5, "cost": 23, "tags": ["기민", "불굴"]}, {"name": "혼", "grade": 5, "cost": 28, "tags": ["빅토리아"]}, {"name": "사리아", "grade": 5, "cost": 22, "tags": ["고수", "독행"]}, {"name": "스펙터 디 언체인드", "grade": 5, "cost": 16, "tags": ["에기르", "불굴"]}, {"name": "쏜즈 더 로드스타", "grade": 5, "cost": 18, "tags": ["신속", "기적"]}, {"name": "무에나", "grade": 5, "cost": 11, "tags": ["카시미어"]}, {"name": "산탈라", "grade": 5, "cost": 23, "tags": ["예견"]}, {"name": "르무엔", "grade": 6, "cost": 22, "tags": ["라테라노", "정밀"]}, {"name": "위", "grade": 6, "cost": 25, "tags": ["염국", "고수"]}, {"name": "패신저", "grade": 6, "cost": 33, "tags": ["사르곤", "정밀", "신속"]}, {"name": "비나 빅토리아", "grade": 6, "cost": 21, "tags": ["빅토리아", "기적"]}, {"name": "비르투오사", "grade": 6, "cost": 15, "tags": ["라테라노"]}, {"name": "로즈몬티스", "grade": 6, "cost": 25, "tags": ["정밀", "예견", "협동방어"]}, {"name": "루멘", "grade": 6, "cost": 20, "tags": ["조력"]}, {"name": "아스트젠 더 라이트체이서", "grade": 6, "cost": 15, "tags": ["기민", "아케인"]}, {"name": "라플란드 더 데카덴차", "grade": 6, "cost": 21, "tags": ["시라쿠사"]}, {"name": "에이야퍄들라 더 크비트아스카", "grade": 6, "cost": 15, "tags": ["조력"]}, {"name": "프라마닉스 더 프레리타", "grade": 6, "cost": 24, "tags": ["쉐라그", "아케인"]}, {"name": "스카디 더 커럽팅 하트", "grade": 6, "cost": 7, "tags": ["에기르"]}, {"name": "페페", "grade": 6, "cost": 20, "tags": ["사르곤", "불굴"]}, {"name": "리드 더 플레임 섀도우", "grade": 6, "cost": 16, "tags": ["빅토리아", "정밀"]}, {"name": "뮤엘시스", "grade": 6, "cost": 14, "tags": ["조화"]}, {"name": "엑시아 더 뉴 커버넌트", "grade": 6, "cost": 12, "tags": ["라테라노"]}, {"name": "치우바이", "grade": 6, "cost": 20, "tags": ["염국", "기습"]}, {"name": "니어 더 래디언트 나이트", "grade": 6, "cost": 19, "tags": ["카시미어", "기습"]}, {"name": "데겐블레허", "grade": 6, "cost": 22, "tags": ["쉐라그", "카시미어", "신속"]}], "picks": [{"name": "사가", "grade": 0, "cost": 14, "tags": ["협동방어"], "pick": true}, {"name": "시즈", "grade": 0, "cost": 13, "tags": ["빅토리아"], "pick": true}, {"name": "레이즈 더 썬더브링어", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "블레이즈", "grade": 0, "cost": 23, "tags": ["염국", "빅토리아"], "pick": true}, {"name": "쏜즈", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "외드레르", "grade": 0, "cost": 23, "tags": ["협동방어"], "pick": true}, {"name": "첸", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "팔라스", "grade": 0, "cost": 17, "tags": ["협동방어"], "pick": true}, {"name": "니엔", "grade": 0, "cost": 23, "tags": ["염국"], "pick": true}, {"name": "유넥티스", "grade": 0, "cost": 32, "tags": ["사르곤"], "pick": true}, {"name": "페넌스", "grade": 0, "cost": 34, "tags": ["시라쿠사"], "pick": true}, {"name": "Ash", "grade": 0, "cost": 14, "tags": ["협동방어"], "pick": true}, {"name": "나란투야", "grade": 0, "cost": 16, "tags": ["사르곤"], "pick": true}, {"name": "로사", "grade": 0, "cost": 23, "tags": ["협동방어"], "pick": true}, {"name": "위셔델", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "티폰", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "피아메타", "grade": 0, "cost": 29, "tags": ["라테라노"], "pick": true}, {"name": "네크라스", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "린", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "만트라", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "에이야퍄들라", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "이프리트", "grade": 0, "cost": 34, "tags": ["협동방어"], "pick": true}, {"name": "Mon3tr", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "샤이닝", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "내스티", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "링", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "사일런스 더 패러디그매틱", "grade": 0, "cost": 12, "tags": ["협동방어"], "pick": true}, {"name": "트라고디아", "grade": 0, "cost": 16, "tags": ["빅토리아"], "pick": true}, {"name": "Ela", "grade": 0, "cost": 11, "tags": ["협동방어"], "pick": true}, {"name": "리", "grade": 0, "cost": 9, "tags": ["염국"], "pick": true}, {"name": "아스카론", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "위디", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "키린R 야토", "grade": 0, "cost": 10, "tags": ["협동방어"], "pick": true}, {"name": "첸 더 던스트릭", "grade": 0, "cost": 21, "tags": ["염국"], "pick": true}, {"name": "토가와 사키코", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "사일라흐", "grade": 0, "cost": 11, "tags": ["빅토리아"], "pick": true}, {"name": "레싱", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "벨로네", "grade": 0, "cost": 11, "tags": ["시라쿠사"], "pick": true}, {"name": "비비아나", "grade": 0, "cost": 21, "tags": ["카시미어"], "pick": true}, {"name": "아이린", "grade": 0, "cost": 22, "tags": ["협동방어"], "pick": true}, {"name": "좌락", "grade": 0, "cost": 26, "tags": ["염국"], "pick": true}, {"name": "총웨", "grade": 0, "cost": 11, "tags": ["염국"], "pick": true}, {"name": "헬라그", "grade": 0, "cost": 26, "tags": ["협동방어"], "pick": true}, {"name": "슈", "grade": 0, "cost": 22, "tags": ["염국"], "pick": true}, {"name": "제시카 더 리버레이티드", "grade": 0, "cost": 22, "tags": ["빅토리아"], "pick": true}, {"name": "호시구마 더 브리처", "grade": 0, "cost": 26, "tags": ["염국"], "pick": true}, {"name": "W", "grade": 0, "cost": 29, "tags": ["협동방어"], "pick": true}, {"name": "레이", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "슈바르츠", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "첸 더 홀룽데이", "grade": 0, "cost": 31, "tags": ["염국"], "pick": true}, {"name": "파죰카", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "골든글로우", "grade": 0, "cost": 22, "tags": ["빅토리아"], "pick": true}, {"name": "로고스", "grade": 0, "cost": 21, "tags": ["협동방어"], "pick": true}, {"name": "마르실", "grade": 0, "cost": 33, "tags": ["협동방어"], "pick": true}, {"name": "에벤홀츠", "grade": 0, "cost": 24, "tags": ["협동방어"], "pick": true}, {"name": "오올헤약", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "케오베", "grade": 0, "cost": 20, "tags": ["협동방어"], "pick": true}, {"name": "나이팅게일", "grade": 0, "cost": 18, "tags": ["협동방어"], "pick": true}, {"name": "켈시", "grade": 0, "cost": 19, "tags": ["협동방어"], "pick": true}, {"name": "라이디언", "grade": 0, "cost": 10, "tags": ["협동방어"], "pick": true}, {"name": "마젤란", "grade": 0, "cost": 11, "tags": ["협동방어"], "pick": true}, {"name": "스테인리스", "grade": 0, "cost": 19, "tags": ["빅토리아"], "pick": true}, {"name": "하루카", "grade": 0, "cost": 13, "tags": ["협동방어"], "pick": true}, {"name": "도로시", "grade": 0, "cost": 12, "tags": ["협동방어"], "pick": true}, {"name": "아", "grade": 0, "cost": 12, "tags": ["염국"], "pick": true}, {"name": "왕", "grade": 0, "cost": 10, "tags": ["염국"], "pick": true}, {"name": "크라운슬레이어", "grade": 0, "cost": 9, "tags": ["시라쿠사"], "pick": true}, {"name": "팬텀", "grade": 0, "cost": 10, "tags": ["빅토리아"], "pick": true}], "icons": {"C01": "data:image/png;base64,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", "C02": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFRklEQVR42sWZXagVVRTHfzPnXNPUNAwsS62sVNAiIaJCJKgMoizUoEAq74sFBT0EUU/1EJJ9vvVgUIIS6EOBFZIE9vmghRIVCGoXy8zS6mam955z/j3037iZZs49Z86c64LNMOfMrL3+62uvtQZJ9HHVfJ0tabekFb6v+5pknk+63aOfwgdhLpW0T//RcUm3ZcANSHq4DahzAiC1IAskDVn4U5JakkYkrYqE3+T/3yxjiZSzlHhVRQJS4DffTzL/I0ATuAB4G1gDnAHWAhuBqZE8Y1IiKftbzS8rWkTXTimJQKwGFgE/AtuA4xZ8U8579wNbLUezGwAzgFFguODZ1EzVBbik4L+ar6uAx4ErgW+BV4EdQKtThcUAFgF3AFcDfwJ7gG+AY8BfQKMNn9SLAkC16PdmBjzAeXajrinrQgPArcAjwH1mPGztDNkFDgIHgEP277HAFVHdoEcNJvF9syyA1KYLdIWBDAKzCoL0qEH97HUU+BX43Rod8Tplq54ATgJ/5IBploiz3CAOrhDATHNgDQI3RsIr4zad0AjwC7Af2Ae8D3weuU/SNYgxcnktc3+PpA8kNXSWzji3j/r3plcrs4roa0mDUe5Pqz7IkgwQJN0s6S1Jw5Eg7YSMn2kZ6GjmnR2S5nYLIs+F2lEtk+Lm+wB6CJgZBWM31PKqOzHcaRfLxmTHMdAJZeNkIfCl46UMCJzJ6k7dS53dNFZMpJSjoLXUqfd74Atv1irJs+6Uuhh4JuJPPwBkgSTAOxXUU3Ur4TFgjlNr2k8ARDGx3edA2oMVEr87BXigExmrACAH9wlgS8nCL4/ncgNqtrNq2SDOU0QLmOcD6vxuSuIc4ROf1tf4ZC884KqwAFHAHQA2R65Q1o0ETHdh2VYRVQGIN1/vuifpwZXCewvGE0CwwiHghTKVZYYXwOXjbYGQ9l4BPnFabPTAb3a/z4FYO9OBi2z+hsuLwyVBBJ4XR4pJ+g3gWuAmAxgAfgBWuokP9X6zw+BOIgtMbBdLVQKYDdwe+XAN2O26Zrvva95TEaDsinnOc69OPy1A1PisdBuqKKgPAne7397iVJtEgLIrTqUTXfEWAqhXCOBCt55PABvsRo1I4x95TXO7Oge4xIde3aOWKcDLkcvVgSXAx4WZqIIpXBgJbnSDclLS0pzObkL0bLv1rhuc075uzowiCydzveT/xKdmAkwG3gPW2X9b1uZIZJE815ng/16KGhyA6+yWuZmo11ooroH2Wvi42R9yIO8H/rb/77S75J3Ugd+H7swC+IV+93+VblpRBlpj/w2BG/L+XE/flrla3W3hiyrWwO/FqEwfiKYhSZUxkHjNkPST/b8ZTSyOSHpe0lUlJttI2hk1/K9n4q2S8XoIqme9STxl2CrpspxATrrguzzi91kELKkCQJj/z5J0zFoPmn8uk6HSHqy7yzyHvVdlAIKWXvMGDWvr0QhgWoF174qssCIvnfbCfLG/ugT3WRNpPang81RiJXxqEOvz4qAXANujA2d1UZBVYIUV3mdX5LpJWQCB6b19Fj62Qs0fCU9LmpmNg24ZppImS9rvlPlgn4TPKmx1Jg7qZQCEl9ab2do+C5+1wmFJb5QFEDRxvYV/chyEz+69TtJ3kfsk3Y7Xa5L2StowjsLH/j5J0leS5se/px0WbE3gaRdsT3X6CbTC78014B9/V14W13Fph8Lf4MJsMKoIxfhRKNm3uQEKTVJbAKHcnQrcYgs0O5nZ98kKeECwx11dC0ja9QMBwJLoK2Qvk+cqhgehT26Ekr0IQHh4pv3vyDkWvpD+BXEUI7t6k4ACAAAAAElFTkSuQmCC", "C03": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFlklEQVR42tVaTUxdRRT+7n38xQasYQHVikqbWFda489GWQrttoAmakz8odVodWN16U8iXYqVKKbRjZHavbooampiY2LRuG1VWqBWEKrQpGp5734u/CY5TmYe73EvBG8yuffNnDnnzJnzO/MSkij4KQGo6Puw3i8Hxgp5GtaJ+UYAbwJ4Rv2tAF4AsFL4IkgW0UrmeyfJE/z3KatRfTsjc9bciloASDaTfI7kgmGe3veiYJqLopsXQSJJPkryuwDDjPRNknxMc5M8PKQ5NTABQACDAHYDuKrfpYh9UDB3AhjQ7yQXAzm9UAogA7ATwGkZa1KFKaotA7gLwE8Gx5oZqEfa/pNJsj8CGK2BmUwwo2K+FIFPityBBgBlT+IhIbQD+AFAZ4QJR+gigNsBXDKLCu2qT3vNO9AEoA9As5G4L9UEwG8Ajuo7i0g/AfA+gIUInNuRZgC9op1LhRIAVwDMadu7FIQaItL9QPpdMn0whr2sBcAbd9KuiMYogHnRTvIGslTvAZLnSfaYQJQEAtN4lTgwHghiifndQ3JatCzt3HGgQe+XxMiBAOPuvUcwFbMA970nMgfCSZIvejQLWUBiEI6J0BjJ1sBubCF51jDumD+rMV/qrQbne4b5pOhInGhLm0meFMGvSe4yRN0i3yKZkVxRy9Tnw91G8pRwnRTutJ7oXE3v0yr2cCPJcyK8QHLQ7ERKsldjmRpJPqAxJ/mHTN40JZyoQjetZQFJQPfTSObZQ/KK0fM3SDZq7DqSM2YBs+pzOIfNvD9J3hfJUNOALSSxBbjJgySPk+z2xtIA7JCYuKr3pyS3e96IJD9S33aSn3lz9geYT73fO8TToA8bWu23JvV9hWSnx7gz2Eaj706SlLTvIfkwyd9JLilbvVdjFvaIZ7Qlj/EOkq+SvGSy2P9ohS9R58r+NtKbJfmatyPQAppItpD8XLB/6b2sHXhabZzkZQ/3lzLaRiMM17pFc8bw4eYNWZ6t0dxEct64vswLRo6pvSTbPILXG6O2i9+mlnlj5zTH4rhWuO1iXRDMDF/zJG92WmMt/ESkGMkCfWdIvk2yj2S7kN1Kck7jKyT7DXP7jM7/YlxvuzzWqHAywHioKJpwdukIjAaiJyML8WFmJLWnFJAWvVTA7XC/xt4R7LixCRuxQ4yHFjHqVOhwlRXHnooJUO75g+STxujTQPzoFMyyJ5iVVYQXW8RwutZCYo1FSIKiH0+FymtQoQvy80PKZRaN/lsV2qexMaNCF4pQIRc0JiKLqNRoxLtI/mqClDXifmPEFz0j7hOueo04tV4Ick3V3OhlSTrmRqcCbvSGiBudCrjRNuNGl+txozaQ7Q8wMU3ydYXzUCBrJvlFIJB9rCB2gOSHkUDWIhy5ApmfSkx6qUTHKqnESCCVuJvkI0ojlvQdSiVGjDCqpRKLgj8dSyXsLgxIerUkc37q8UkkmTuWM5nrVjI3UC2Zi6XTSSSdvt9IkoonNp2ejaTTjeuVTtdb0PxsVK2WgqbXk+yD61HQ1FpSfiXCp1QW1lJSHomUlN+YkrKlqJKylqL+3UhRf02kqD8TKerbFABtUV/zqXW9FxiHPMMLHZHsDSSGWR3HKofquQBZj4OtYzkPts4XebDlGNxN8ijJrsihkyN0i/x+5qUB7ntJMCHmHM4u0boj4hnruuAggC0AOgA8C2BaZ5zlSJb5BIA2c5BrxysaezySmZaFe1q0OkWbm+14fU7H6wsbdbxeNgzFLiMyXaNuC0jfh+sE8HwVONtf3qgrph26YmrbzFdM1XCMANhai8QEs1Vz0iKI5yroJO3jACZ1o5JEbuIrGmsC8L3mJKsZ6Ubd1EN5/UGT+sYuug9upovu2F8NJv6PfzWwTDWqzqUpwBuKZNy1vF5otb/bDEvP1+3vNv8AWlZ7LRVbgCoAAAAASUVORK5CYII=", "C04": "data:image/png;base64,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", "C05": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAHT0lEQVR42s2abYxdVRWG33PunXZGOi1oW1pDaIsR00AVh9A21q8okJIA4UNBYowmRqL+YDSCwcoPP0JMGn+ImmBiggrWlkYxEb/HoGJMqa2UNkrRWtFaA0EDLVKK03vv4w/fTVY359x77vQmupOdM+eevdd619prr73W2lMAcisl9SRdKOmIpIPht/9la0nqSpqSdEzSHyQVkkigU0uSPC7pNkkrDL78PwB/kaQPSjpkPCdpPQrQkvS0pB2SZiQtHlKIwr10b7mn92IO4FdL+r6krZKO5zSKYEK5UAckPSPpYptUP3NKADsNgJWBVm8A+FWSfiXpd5I2ht/7CpAGXS3pPkkP+O9nK4QoMvOTpDMkvVzSMkmnefxRSU9YIccqeFXxXynpJ5LO9b7cY/4njwfyXgAlMAY8xH/bj4DT/L2smHMBsBnYDZzwnB4wG94BngFmgJuA5RV0Wn6eBez1nG9n307qVQLEwe80EIAfAOPhewEsBO4KAGeAjwCXAVPAa4DVwDrgWuAzwD6PfRaYDkpJPJcDezxmFlg7FwHiKuwGuib4XaDtbwXwNf++BVhZQ6uqvwnY77nvMC0BS4BdYQW391n1vgLkqwDwbz+3h2+7gUNhTtvfWmZaBu22w1PAuab3Ub+/Avh10PwJ4MJTESBNbAM7TfgFP7cZzHpgB/D6IbSf6N4I/BRYACwCHsx4bO9nOk0FSJOvNtFu2JR3hw13A/BaYDKYQx3whcAG4Bq/jwM/C5rvAZ0m2m8iQBFMIK1CJwhxVxi7wH2Q5hcFZzDfHg7T7GTaLwetZpPlrloFghB3Dmk+qU8A38toJdd7wSgFKNxbtneCphLjL4RNXDRY0THgOxmNRHNrE9sfRoBI7MpsFSKAzQOEiOa4rULz3Uz7IxWgCADyVYhAPlsjRBHOjruzOZHWlmHADyNA1SpEAL3wfltmv0UQ5qs1czt2n2ua2v5cBCjCwbQzc3sRCMDNQehkNl+uAJ/MBuCbw2o/ChBPyrLPRkya2QA8VmECHQvyl+AqBSwNdt6r2EcP+2Qu+mi/qDjVNUjiokK4Mvj9G4HHM/A4vJgMdFaFUKQbwO8Drvd5oJrQo59XaxXAOklvkDQr6VGnlE9KeqFh5rRM0h2SrnNC03bcf44TIUlaI+mRkE+UnrNJ0vMN+cyXtNx5wvmSxiTtaJvwhKRpE21ZgL86B03Pw+6HnHaeMOEnJV3vcbc4uZkww9QWZOCnJX0xSw/HnAidLeks97Odm6fnMic09xvrnnxJpryZ6loHOAIcBH4BfMjz5vn5pRCQvSrQvTiY18dCGCHgw6Z10LQ7ffhvMcaXbOIy2zxJkNngOWZriF7rOWO22xQSnx/oXZn5+QT+mhqaMZObNZapzJmUVW60zDb1Wp+a3cxvx/av4L8LM5oF3hjovN8Z2JmB/hrguYxWL3Ox9wIXVQEfdA7kA9dlghx22vcocAz4Z5aRbbd3Se+fCPGSgBXAPzx3v2kdDsC3mWct8NSrqhJVJZZUiVgvaZ6knfZaLUmvlPRuSUslfU7SU5Iul7RQ0rc8b9q1pl2uNX3S47ZI+rs35jxJa+0cHqrh/9I2RAZV9jnYBLzHWmsDi4G3hW+XOA9o2yxvqKExUON5b1px6wUX2LL7a/u3lV6RcT/lOtD+UDvaF+pBv3G9aIfn9kyrCFW8XuOa7BwSkXjcXwI8FZKaVs34qqDwTs+9NGi9GBbPsOAjwFvts//muKfVcNmTp5twyNExLZ1KMNekp3LI4pBNpUSmlUWfg8Cn982Bzn2uC0VeGlVKmUC9GTgQ6kQd4C3Au1yRa6qMtcDtwEbTSIHeAfNobFLDmMxNwPEMPAZznsOHaZ8H82oUcSZwBfCEC1qvCyFKEuK4eTUyqSYmszCkgd3s5HzY9SCFmudRhwjKwuElzhMSnXOAV5sGFbnFPebd16T65QBycem3GYOnTfztWdp4exDw5sA4jVkdwO8KPErTuse0cwVNVSijVoC4Ad8HPB+I7QVucXJStVJvdQDWAz5VIcD6oN1P12h2FfDxUFrHGN5bd/BV2fs48A1PPuY6zUZHm3FsK/Pz48AfPe/zIUJN4y4NJrIh02ors/Uxl+i3GkMqZU7k+yI/bNYBjzhNvLVC23VuMhFMiftXKgRNVe7HgjKKAW42rcomY9rrlXxxbvpjDLgK+LqjyCptFw02/OWheh2r2wI+4G93NPAudatynTFe5fcifTzdrrCJttUnXFhkm50JvydlbLIAlw15WFWtynnAGYDaDomOuBchmOoOcSWK5x31peCKisu/JQ6VH/R7d4hAUhm231fdE6fb727GuGlL98A/dHI+ln1fKunnjkrLOfCI2Iq6i+5TaT3T+LEvpCczDU76wroYwe1/5U29RiCAJP3Z9aVcgOd8+88o//9i1P8H0fJzRtLpQVuTtts/DUwRh2ztEQuQlvaBDOS4pF+6cjfS/4AZlNSfysq+zGaTqm7z/V6MYL+92P4DhTJEQZfX17UAAAAASUVORK5CYII=", "C06": "data:image/png;base64,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", "C07": "data:image/png;base64,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", "C08": "data:image/png;base64,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", "A01": "data:image/png;base64,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", "A02": "data:image/png;base64,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", "A03": "data:image/png;base64,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", "A04": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFeElEQVR42s1az28VVRT+3vSV1l+BqoH624VRE0uKBmIomlIaKonExKUmSAyYAAvhD4BE3bQrWEFc4JZqcGOCibjQtlYaExpxowsggFQahSKtUfra997nwnPN53HmvXlj59lJJjNv7plzvnPuOeeec+cVSCLHowCgHcDtvAREOQIHgMcBvJanrChnw6wF8GaeUxwh3+N5AN0AVgGo5iEvLwVCYG0AcA+AJ51rLRsFWmJARWbtNWZ9AHghQYGC8ch8FP+jApUaAbwOwGq73+hmRmeq0uwZKMi5D0Cb/FYF+uSdbgB3GVh9vx3AXruPMrkYyUbPol3f5V/HQfe8QDIiOWrjFTu7bDwS2kNG857jkfrMCn6XCV4guUhysz1vtetDJOeMZtGub9lYm117bWzBxndnUaIR8C12fYlkSYRXSF4keZ/RRCRfEesHBT6w2Ska7UUbD0YokRxwspZMgcDwGZIzJKv893FC6I+K9St2f07GP4x5v2q8uxpRIg34yK4PkDwvwqZJvkryMwGxk2SPuU9VFK2aIn0kdwj958bjmtCeN1kqO7MCBTvvIDlmAkoGZqtY6m2SUyR/IznrQFcE3C2jmSK5X6y81ehKRjdGsl3kZ1KgIAKGjfG8XfdL0PrAVvCUWFC304ANgX/AyRgWAxWyKBCADRrD23Y9LuOBZoDkDbF42WhHSE7YfVnGb0jAKp/jTtZQvcxUD/weZ5VxS4ORWK5fUmZVss4YyTst40xKUIeZmLN3w0xGxnvcydxbS4la4Le7NPgTycdsbEUM+IoD3yFT30nybExmUiUCz0dNltJuT1IiKV12k7wpeXreFh5diPolYOPAe96dbiaCErOiROC9WdaaCslfSa6LS69x6fJhkpck49BcCZYZQHJLAvivHPgjJA+nVGKLk7HHYbhk2P6RXuEi/W4JuuCDR511ksCPO/CDknUG5fmaFEoEWcccljOG8e8M6f3qpHthxAIs+GefA18W8KuEz5AAXIxRYrXERNkp0Scx0WoYFNNJjddw8wjJU1KgkeQVK8ogfjnnKswAfmWM5RdlNU5SYjKG35wUh6EwvOKwfWqYAVv+Z5zQWZIbxN+2kfwjRtiETHeL+btWoHqEZ4clEFeS/M6t2jRZ28TX1xsmNcYMyZ2hiWCNvjapqSGA+wE85RqdtA0RADwNoCNjv0xtaLK4UFiQpkk+m+D/tVxok6VqX3p4F3owxoVOhYyUFMQhdX1pwVQviK+JyyUF8ZADPxPjkj6IVxgGxfRxXBBrGj3TYBoNSvzslEhKo5usFooDnymNxi1klxtcyCoJShyxM/zuSQE+00JWr5QopSglVIn1MaVETw236Y/pl7WUuJmmlIgr5sriw1MpirkA6henxMYE8GmKuTLJl9MWc/XK6a9timuV0yEmrpNcS/I5yTaVZpTTXomhDA2NutN1Z/mmNDS+pTzhrHKgTktJ10JW3e9dzWgptalvt1JZm/oB19RftYb9lgNdbaCpDwvV6FI09T69diZsq5wWy+6whagSMwMLJF8k+YY8P208pt22SudSbav49NpVY2NrWOjPxSx0X8j4cDM3ttJsLV4gea/46/sxpcQ7ZtEWo73QzK1Fn5l2u83dXpfLX5dmJcyWp+m195u2uZu0vX5IngeffcKySVV2NDokMQQeB2V2mrK9rvv/BZL7bPEpuIzRSvJb8e9PXFAG2jbjoTwbwhNl/IBXtesxACW7D2cRwCKAs/LOmPsiFGhLxkN5/u8f+QKIEbtWAYzK/bL/yBcU+MYAXwbww3L6yJfGxQoG/CqA7wH8bpZe8j9mFHNSoAVAGcAkgIk8/wpQzIlvsPRHAH5MscuR/V8lOf/dZoW56XxeAv4EtUqsHPpTPLsAAAAASUVORK5CYII=", "A05": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFL0lEQVR42s2aW4hVVRjHf3udM2ozE+UU0gWlfDDp/hgpklmiRGXYSzd6CySo5+iq1UP1FGSWD8EwZeQUWUYEY0WodFGKSuxiWELSRSxCGsbmnP3v4Xxr/Ga7z5l9zpwzcxYs5uy91+X/rfX/Lmt9k0gKwKXAAWolACndWTy2K4EDAZB9eALoswalLgRfMmx9hhVAwcB/AxwCRoCLgWqXCVEyTBcZxh8NcwgO7GvAh8A+YIV7n8wi8MSBXwHsN4zbJt5LQlIiqWy/h1UrG+wZScH9nqnq59xgmIbtuWyYyXYIkvolfWkdtkialxmw1EQtF6jZPn6uMwyDDFO/w0lWAN9xqaRj1nGPpMWzsAOLJe01DMckLcljQ20b8hVmHfCmPR8HrgN+AZYDY8Bc4+gc69djbeXGKRfg+DjwH3DSxthlyvoxcK5hWQ+8Y+NVJo1QR/q4lY/YCuyUdI5t4X51ruyT1CdpwOaUYcDp6KRaT4DEaknSg5J63bdFko7Y4BVJqavVFuq4jXVY0kI3T6+kBwxDxHMa1jwKNSpxC68C3gfOcx6ylSKrvwNrgG9zaTKFay5ihxcYDyvAPOBrYEcbwo6qjfG2gZ9rc6wCltjcYToCxEkqwMvAtabAoQMOK5giXwIM2k5Up7sDsZwEzgSGbWXSNguR2JgX2M5eCIy2g0K+3Qmb4KZp8r4RjmuApQa+1G4BYuQ63sHYJ3W7G4palSLgRw180kRwpzpUKbqoo0WEmKpBjMFXWRzeLK+ztWiZA6wtomuhgM2/Edhubh46G177sV8C7jEM5WYp5MG/ZRZovMCOxTPECPCkjROpVwEetTGLHJiCmVOAoXoOrlwQfFGzGXl/FNid8/1oA/3I7kQUvKEQ5SbAV5ugQo/zonJ2vqdJ0xoFrStEOaOwra583k5UXawTBVALOpEnRAz5J8DFFb6hDeA7qdiDptgxhppwGKnFOTu6DHxWCJkQt8XrHw/yb+cJu7FEIcaBP/29ULzI+g54NqM83VQibV4B9kbmBLc1CfA88HMXXi9GSh8HnvJ6ETINTti1XdJlqx8X+DnzJRMLHHKk3AZ80UW7EHEdAl5wJvm0WMi7/Ie6UIEfB/7N6mioE8t8ZP6gWQ/cKcXdC7yRhyc04Ntj7vyrWeR9aoxI83QzNODcQWBLlnOzwP3tFhjmsiFMIf0zwBF3sJnJ1Q/AX8CmRlYxTCH9H8Bn7t1Mrn4CfGoOtq5FDA2OklXgTrvQmum0kw8u72p0AAoNOl8NvGghd+FbgjYKULKbus2GpZqHIdSJv+db3H2Web61wAcuzu8kdUQtlbQO+NUwvAoMON3MFSBxJnMrcDmwB1hp4De5Np12Wk9TywdcbxboMsMUlTvJEyDyfiNwu9FntbnwHuBzYKftTqfK2cAndi4p29yrDct6wzZJH8qZs/Ad5sDut05eJ6I7v8J5SbXRbMYzycMZSzhmeA5aLPQ98HrEHBW0YveSG03iEWf7vfn6ilqOFk6lmNI28D4e0ndx6lI3zVB7M/CD/T1sjAjRvi4E7gZudeDrrXCcYLe7Rau0CD5all57HstxWnK02QXcYufiRUCKpB5JyyTNz+THGqWfYqZwjaSfXI5rzP4OuYyibz/k2qUutbSyYD46YhuQtFxSOdsptJCIXuByubEM1hFgMNNuq6Tz3cI0mwBPQoZraZPcLdkBewOwDHjXvvXX6RPfv0ftXwfuA35jcnq2aJgBoGaTfI1uoaPwN5vTGczwWcC9wD9mJv3tW8sg/gcDb4RlSYmntwAAAABJRU5ErkJggg==", "A06": "data:image/png;base64,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", "A07": "data:image/png;base64,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", "A08": "data:image/png;base64,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", "A09": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAD6UlEQVR42u1azW7TQBD+nFgtbwDiBklaegHRVE0qAVIlDpRSCR4AHoIeOfMgfYkKiRvwBFQibdoeqERomkQ9VBSRxvm4jMVo8c/a3oSCsGSts7Znvm92PTM7G48kHB9lAAGAKoBX0vcawIG65+4g6fIsS3uT5Cf+OlrSp59xck4K/L4AH8pJ6XNOYhLg9wTwSI1AeN12TcI1+HYEeJPEnksSrsBXYiyfRKLigsQ0wU+ERF7wpZzgk0iU8mAp5fC8JQBjABUA2wDmxLeXc8SKOZFRFZmZ8XgZA5kn7XUAbwEsABgB8HOGofDdXQAPAXTC8JTFmlmtTwBrAn5YADzk3SGAWwAeiexSVkC2li+r6/cAugBmCqYGgcjoikxPTTHPFYHQ6oGa63sAngEYFMhvQlkDAE8BtJWswHo0LL3NNZLPSVbl94y0TZL9Al6oLzK0zArJF6Iz1TvZ+PmaJGMkeawUXpF2hWQvRxzoybtaVlN0UJLBWlqcSANfVenBubSDCBJNRSJIAB8o8FEyBoauthr1si0Bbfl2DKgByUZGElHgZ6VtKPDm84kkkiwfpsRjkmckX5I8Ugr6GUYizfJ99eyR6DoT3WEqHkkiDXxA8hvJdbm3RLJjkEgaiZGa8ycR4BsG+A7JutxbF91BEgkb8GuGl1g0SPRSSMRZvmE80yF515haa2kkTPAHMeBB0lPXixEjsWwoXyL5keSOXOt7yxHgFw1j+jEkDjQJKN+bBP4OyQ/K0hBrmSOxbCj3FHE/A3hYkKiEIzBPcleBPzfAL5D8LPe/KmUhiWODRN1Qrq+XDPDHSp4f49I1iXNFYpfkPEhuSccFyVOSq8oatxXAH9KeihXLBsGRCkC+sn54+iogjuSdhRTwJolV0X8hcrZKKQncBYDvRv+Z9HkpKbfzglNUJmQzhW6ogHaownvUFDpRH+zUppDNR1wlua2G/FJ9xLZuFAlutBfjRnfEldYn7UZtAtlshkDWsAxkfReBzIbEE7lXt0wlTixTiaarVMImmdt0lMytJKTRYTK3mSeZy5tOzzpIp5sp6XTNNp2e5oJmZVILmj+9pOy6WFJOc1G/Ysisiq7Ci3rECPBjFi5Zj6jKhJ+i+7fTtrToqRrNGEANwDsAV3PURaNqQ10ADwDsG3roqjJHVbwigPsCflgAfFiBG4qsewpwYJsMZq2NjmU03gBoSVlwVIDASGS0RKYnOpzXRvVIeAC+ANiQcqBfoLToi4wNqUx7WdPwPPsDYR3/EMBjo6aZde63Rcah2neY2j7xX73F9E9s8uXdZnW6VzztjW6ne8T//2qQQqI1jT97ZN2lvHR/t/kJ/tlLI8eS71UAAAAASUVORK5CYII=", "A10": "data:image/png;base64,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", "A11": "data:image/png;base64,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", "A12": "data:image/png;base64,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", "A13": "data:image/png;base64,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", "A14": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAE40lEQVR42tWaS4gcVRSGv+ruSTSZ8RE1xkfMQ42iCLqJQhYBXQi6EXHjA6KiCxOIiltdZCMIbpQYXCgYFczGiKAoiKALUUEQV4oxUeOMeSCJydjRZLrrd/NfOBaZ6XpMTcyFy+2quuece97nVHUmiRbHhcCfQGtEOrQ7NgBZmwTaZKAHrAe6ZxsDSeJLgOuA8cL9/w0DWWEW748D64Dz59iTNWWs1wB2NsfMvS4yA0u9VyVgF4yBJOEkwQHQB8aACWAGuMpmtBLY72fTfrbE1wKGhq0pRqnKzLwulzQp6Q9JRyV9Jakn6T5JxyUd8ipJ0+H6Me97V9IxSUckfS1pSQF/6dlr4DvLLcUU7weW7oRnGuPBkWe8bylwnu9d0sQPmvjATIBfDrwEXG+zyM1kVrh+BLgZuDH4wUyjkFcxE6cDrQD2Aef6uo4EE1N7gFvsB1lVB+/NUzBIUs5GhObceztnOgqdTjPdkr4zr6G0CQMDz6YmNDwTDHQKkabJWLbQUagLHAOetgaaZvI+cNJ487ajUHFsdxyv6piJ6NCh9eRpIt28ZuKYIZ+RtELSmKT31GykLLxK0guSOlUzctnDJ8Qvm/AHLgmQ9LzLiv2SfptlHnQ5cci/j0raIalrQXxqvG/4XifQnHOOMqFUrOU2ly1W92LgTeAJ4ITN6Jw5IlLMyqn4m3TF+qrN6B/jeAt4OJia6ppQlMJ2S2hG0lBS7t83ec+9kqYs7alZ5qSkX73eb82udbEnSQPjlKSdxpuN0kQ0kW6YY2FTPHzu331Jd4Y92yra/osBdoOrUlk4kYm0Z6xwvm7yk1E2Vjz80HZ8d0CMpNeDVvI5Znq+qwC/0T4UtZt8YtGocvpKYC1whdfVbkbWANc61KUY3QU+Bj60/aYsurpki5ierw5hdDHwObAbeDLQGwCbgNuBvcDvwC9ujvYBPwCTneBk43aixT5cH/jRyFKRlgMPAs8Bp+xgYy6nyzTuWegBktOf9ME3F8rwnukfNFN/29H7/0mgI0xoQtKjdrA8qFiSnvWeyyQdCDY810iwRyStMfzWwvOEY6vpU8eJu4Vk8lBgItnxlJ/dEGw2L8nAUNJ6w+/xvVPh8JsL0bA32/k6oZYfFqaCKt92bI4lw/deL/WevKQJDY1jRcCjYKZbgB3GmXLQYJbzjaxfZODExKaQWH72urZmfZ8cea9he4XDD8rgLFuNRiYGwDvAYT+7umYhmBg/YEE+DrwWDj/v5fTAhHY5MiQGVtZk4Cqvu4FvgU/qNDhV+4EU5j4L9y6vyUCC+8mzU6cfqNPQ5IYbOl9cHJr1MgdI+5Y59/RD4lqQl7ux4bjIttwxU50SM+1b5QhGg766kgayQGwY4CfDs6ykBlJrOlbAl1WNaGVbyij1iWAqZV+nzIYzhsqOX/5Wait7FSTfA3YCt5pwZWmN0GrX0WiTa55STJRlIAe2AQ/Q7rjGVedT1oiamlDX9rmxEDqrht2q4y7go0C/tgaSrR8GXil5mKT6dcAdwBfAdyUlmqLRVIF+a++F5hq3AV8C9wDvt0WkV8HZykablFHTZ6Np0xlpDmEM5zMKxaq0CgNHPY8YNq9TKrSRicsmqhP+eNFvM2y1+aX+LzMwPZ/fAxZKA5mb/j3A8bONgTi+cVZtbWQt/93mAn9LaI3Iv8Q7Le2xvIECAAAAAElFTkSuQmCC", "A15": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFm0lEQVR42tWaa6gVVRTH15x7NMUHV2/l7UlICRKURGRB9akCDZQwEZQ06V0YSpLSg+AqZF8iCi2NoiQIMhOxh196qZmovc1CkiiKHkYlZqTn8etDa8O/zey5471zMgeGOWdm7b3Wf733nskA6+DRZWZtM+sYk1oHhc/MrOXCZycSgMznxczmmVmv/66dCAAycZulZvacmb1kZt1+r3oQQJVn3a+L+ec46te3gBH+rFYlz6omykT4e1zoJtAGGv7/TWBk1SA6JXzLhQ9HQywxqkoQVQDo8uuiSPPx0RFLVOXzCxKaj48QE5uriokqNH93gfB594Il3qgCxGA135/w/Vli0CDiGzXXbFZC+DtLCL/fr+0CS7wGnFQCRE2snguglpNdUsLfWsJFdgAnA0sKgjvQbgSGFoCopeSK/Xki8DgwJGdgGeGbft0OjBFm9w8CROB7HdAnz7MAIBCcC3zpk61zEJkTH4vmtwNjc7T4gNClxm6K3Cko9mrgsNP0idKzMPk5wD4nOOLXV0QjBswv4c+x8AuASfL/wRIgNkR8VfijEYgsaP7TyAXCZOuB0cCNInjKbXYBpwjj+/z+V84j3O8r4U7rgeHAVcChKDEEfkuBLnPGio7IEquAH6LBMcNdwDgRckk0537gPImJZYn5lO9TwDc5dG35P82Ay4HvIpTqEuOAacBfPrjVj/D3CtOm0//mAOpCtyzHEmHOPcB44AaJt5hmFTAiTHYRcCDSwPtAjzCcIRoN14+AU3M0HwQPmpriz18HJgj9cqEPgn0OnCU08wRA4PuMptGglUuBn0TzPZINAs31bgmAj4HThNHiRBv9qD+/wv/v86QRxq0Q99gDnClZph6BAHjWZappFgqEV3o+HhPVB6WZDWyJNB93okHz7wHD3PeXi/vtAc6W8Y8Be4HTC/jeATzvc2VaB46lEtdyaBdGwoc4+UXcJQN2Ol2w4GcCoi5K668S/0u2PMKsn15IC8zCnEAM2p8lzCYCf0oWaeSAsBJ8a6lWopAosfq6q0D4lU4zVMwfp8Pw+xOJpa4SAAbczGWRP6aE/9CLkFrq1UTeb0o26y0A0a8LBcEuA15O+GMsvPZDLT8PAedH9L0eD6k1QkNAjCsI4tuBNUXN3MXA9z7ZNqA7J53lrQHUp+fLmCDEdNf0USluzQhMU1Jzbw7fOUL7pILQQvZjVMjeFRAG3JzoRAPztaKxTACso9wRlPBBlKJni6uGQrZaXWiyaD5u5t7xALspIXxLqufoRAJ4xDvb9X7d5DGxrQDELuAMz2SNRCvxBDBMm7lGoqlaIz4cN1Vt4CBwSeSvZc4XE4F9RCrutwm+QdbpYRW2N2GBDb6HM0OetWQigN+9Mm/3c6vv/WwFrpHslclKb1EiqHXvqNvb6cOJdvohYEjQxvicBc0mbwMCzUwZ3C7p1xfmFL/JzqNo926k8J0q1TvEwHJd0ASzT5BdhI3R0k6buUbUVrej7HLErzukqoci1C3L1lZC8yNy+E4RECvylpRBOxd4FS1aXM+M+p5UIPbJuDD/CznxFn6/ndhyrEs7/3BeHRjItsqcHEtokLV8oWRiydsKhNeUPaBtlbK9UAyiGYHQDa3hwngS8Efk90H4Lf10oqU3tgaytThHqmpLhFotdKO8YcvLclsSa4//ZHM3Xi0pgBmizacjoRuyZB17vDZ3YxDzJagPSD8zN7HMDNuOx3V7PQYxV/b+Q4E8KH6vwvcMxm30rFfwnrBpZnUzW2tmPWZ20N9GrjWz0f52suU0O81sqpn96m8zW/+nt5TqCivF30Pg7pYus6sqvlW+t227VjMz+0I+L+gys91mdq2Z/VyZ5jv0nlgtcYv0971Vaz6cWYc+9ghanuV+/3Xlmg+fBnTwa5Wau1X4BIET5WOPOCZqnfzc5m+Net46HJCXMQAAAABJRU5ErkJggg=="}};
 
 /* 데이터 표로 담기 어려운 특수 규칙 */
 const RULES = {
@@ -552,7 +631,31 @@ const TIER_VALUE = [1, 2.6, 4.8];
 // 이게 없으면 같은 맹약을 만들 수 있는 오퍼 중 아무나 집어서 I티어로 덱이 채워진다.
 const OP_VALUE = [0, 0.6, 1.0, 1.6, 2.6, 4.2, 6.8];
 const OP_WEIGHT = {none:0, mid:0.5, high:1.0};
+// 최종 단계를 넘겨 더 쌓은 중첩. 중첩 수 자체가 효과에 쓰이는 맹약이 있어 0이 아니다.
+const OVER_WEIGHT = {none:0, mid:0.55, high:1.2};
+// 최종 단계 초과 인원 (독행처럼 상한이 있는 맹약은 제외)
+function overCount(ci, n){
+  const c = COVS[ci];
+  if(c.maxCount != null) return 0;
+  const last = c.tiers[c.tiers.length-1];
+  return n > last ? n - last : 0;
+}
 const GRADE = {0:"선발",1:"I",2:"II",3:"III",4:"IV",5:"V",6:"VI"};
+// 아이콘은 스프레드시트에 넣어준 이미지를 알파 마스크로 쓴다.
+// 마스크라서 테마·상태에 따라 글자색을 그대로 따라간다.
+const ICONS = DATA.icons || {};
+function covIcon(ci){
+  const span = el("span","ic");
+  const src = ICONS[COVS[ci].id];
+  if(!src){ span.classList.add("noic"); return span; }
+  span.style.setProperty("--icon", `url("${src}")`);
+  span.setAttribute("aria-hidden","true");
+  return span;
+}
+// 최종 단계 도달 — 표기용(핵심·부가 공통)
+// 최종 단계 도달. 단계가 하나뿐인 맹약(신속 2 등)은 켜지는 순간이 곧 최대치다.
+const isMaxTier = (ci, lv)=> lv === COVS[ci].tiers.length-1;
+// 가산점은 핵심 맹약에만 준다
 const isApex = (ci, lv)=> COVS[ci].type==="core" && lv === COVS[ci].tiers.length-1;
 
 const mk = (o,i,isPick)=>({...o, i, pick:!!isPick,
@@ -575,11 +678,13 @@ const S = {
   bonus:-1, excluded:new Set(),
   coreFocus:1,              // 점수에 반영할 핵심 맹약 수 (0 = 제한 없음)
   opW:OP_WEIGHT.mid,        // 오퍼레이터 티어를 점수에 반영하는 비중
+  overW:OVER_WEIGHT.mid,    // 최종 단계 초과 중첩을 점수에 반영하는 비중
+  locked:new Set(),         // 반드시 덱에 넣을 오퍼레이터
   favCore:-1, favAux:new Set(),
   picked:[null,null,null,null],   // 0,1 = 5티어 / 2,3 = 6티어
   deck:[], results:[], reco:null,
-  page:1, perPage:20,
-  filters:{min:0, apexOnly:false, requireFav:false, coreCap:false}
+  page:1, perPage:10,
+  filters:{min:0, apexOnly:true}
 };
 const pickedTier = i => { const s = S.picked.indexOf(i); return s<0 ? 0 : (s<2 ? 5 : 6); };
 const gradeOf = o => o.pick ? pickedTier(o.i) : o.grade;
@@ -636,7 +741,7 @@ function scoreOf(raw){
     if(!counts[i]) continue;
     const lv = tierOf(i, counts[i]);
     if(lv<0) continue;
-    const v = weightOf(i) * tierPoints(i, lv);
+    const v = weightOf(i) * (tierPoints(i, lv) + S.overW * overCount(i, counts[i]));
     if(COVS[i].type==="core") corePush(v); else aux += v;
   }
   return aux + coreValue();
@@ -648,7 +753,7 @@ function heuristic(raw){
     const n = counts[i]; if(!n) continue;
     const c = COVS[i], w = weightOf(i);
     const lv = tierOf(i, n);
-    let v = lv>=0 ? w * tierPoints(i, lv) : 0;
+    let v = lv>=0 ? w * (tierPoints(i, lv) + S.overW * overCount(i, n)) : 0;
     if(c.maxCount == null){
       const nxt = lv+1;
       if(nxt < c.tiers.length){
@@ -670,7 +775,8 @@ function activeList(raw){
   const out=[];
   for(let i=0;i<NC;i++){
     const lv = tierOf(i, counts[i]);
-    if(lv>=0) out.push({ci:i, lv, n:counts[i], banned:S.banned.has(i), apex:isApex(i,lv)});
+    if(lv>=0) out.push({ci:i, lv, n:counts[i], banned:S.banned.has(i),
+                        apex:isApex(i,lv), maxed:isMaxTier(i,lv), over:overCount(i, counts[i])});
   }
   out.sort((a,b)=> (COVS[a.ci].type===COVS[b.ci].type) ? (b.lv-a.lv || b.n-a.n)
                                                       : (COVS[a.ci].type==="core"?-1:1));
@@ -704,21 +810,27 @@ function search(){
   const all = poolOperators();
   const dead = bannedIn(all);
   let pool = all.filter(o=>!dead.has(o.i) && !S.excluded.has(o.i));
+  const lockedOps = pool.filter(o=>S.locked.has(o.i)).slice(0, S.deckSize);
+  const lockedSet = new Set(lockedOps.map(o=>o.i));
 
   // 동일한 맹약 조합의 오퍼레이터는 덱 인원 수만큼만 남긴다 (계산상 완전히 동등)
   const bySig = new Map();
   for(const o of pool){
+    if(lockedSet.has(o.i)) continue;          // 고정 오퍼는 추리기 대상에서 제외
     const k = o.tagIdx.slice().sort((a,b)=>a-b).join(",");
     if(!bySig.has(k)) bySig.set(k, []);
     bySig.get(k).push(o);
   }
   const k = Math.min(S.deckSize, pool.length);
-  pool = [];
+  const rest = [];
   for(const g of bySig.values()){
     g.sort((a,b)=> gradeOf(b)-gradeOf(a) || a.cost-b.cost);
-    for(let i=0;i<Math.min(k, g.length); i++) pool.push(g[i]);
+    for(let i=0;i<Math.min(k, g.length); i++) rest.push(g[i]);
   }
-  pool.sort((a,b)=> b.grade-a.grade || a.name.localeCompare(b.name));
+  rest.sort((a,b)=> gradeOf(b)-gradeOf(a) || a.name.localeCompare(b.name));
+  // 고정 오퍼를 앞쪽 인덱스에 두면 탐색 시작 상태로 미리 깔아둘 수 있다
+  pool = lockedOps.concat(rest);
+  const L = lockedOps.length;
 
   // 빔 폭. BEAM_MAIN 은 순수 점수 상위, BEAM_PER 는 "이 맹약을 가장 많이 쌓은 덱" 별로 따로 확보하는 자리.
   // 후자가 없으면 염국 9처럼 초반에 손해 보고 후반에 터지는 갈래가 중간에 잘려나간다.
@@ -727,10 +839,20 @@ function search(){
   const base = new Int8Array(NC);
   if(S.bonus>=0) base[S.bonus] += 1;
 
-  let beam = [{c:base, last:-1, parent:null, op:-1, h:heuristic(base), dom:(S.bonus>=0?S.bonus:0), ov:0}];
+  // 고정 오퍼를 미리 배치한 상태에서 탐색을 시작한다
+  let seed = {c:base, last:-1, parent:null, op:-1, h:0, dom:(S.bonus>=0?S.bonus:0), ov:0};
+  for(let j=0; j<L; j++){
+    const c = seed.c.slice();
+    let dom = seed.dom;
+    for(const t of pool[j].tagIdx){ c[t]++; if(c[t] > c[dom]) dom = t; }
+    seed = {c, last:j, parent:seed, op:j, h:0, dom, ov:seed.ov + PV[j]};
+  }
+  seed.h = heuristic(seed.c) + S.opW * seed.ov;
+  seed.hc = seed.h - S.opW * seed.ov;
+  let beam = [seed];
   let expanded = 0;
 
-  for(let d=0; d<k; d++){
+  for(let d=L; d<k; d++){
     const map = new Map();
     const need = k - d;
     for(const st of beam){
@@ -802,6 +924,7 @@ function search(){
 
   S.results = out; S.reco = out[0]||null;
   const usable = all.filter(o=>!dead.has(o.i) && !S.excluded.has(o.i)).length;
+  S.lockNote = L;
   return {ms:Math.round(performance.now()-t0), pool:pool.length, raw:usable, expanded};
 }
 
@@ -813,6 +936,7 @@ function renderChips(){
       const c = COVS[ci];
       if(c.noBan){
         const s = el("span","chip "+c.type+" nonban");
+        s.append(covIcon(ci));
         s.title = (c.offRoster ? "밴 대상이 아닙니다 — 정예화 여부로 켜지는 맹약" : "밴 대상이 아닙니다")+"\n\n"+(c.desc||"");
         s.append(document.createTextNode(c.name));
         s.append(el("span","thr", c.tiers.join("/")));
@@ -824,6 +948,7 @@ function renderChips(){
       b.type="button";
       b.setAttribute("aria-pressed", S.banned.has(ci)?"true":"false");
       b.title = c.desc || "";
+      b.append(covIcon(ci));
       b.append(document.createTextNode(c.name));
       b.append(el("span","thr", c.tiers.join("/")));
       b.addEventListener("click", ()=>toggleBan(ci));
@@ -860,7 +985,7 @@ function toggleBan(ci){
     }
     S.banned.add(ci);
   }
-  renderChips(); renderPicks(); renderOpGrid(); renderBuild();
+  renderChips(); renderPicks(); renderOpGrid(); renderBuild(); markStale();
 }
 function renderDead(){
   const all = poolOperators();
@@ -878,34 +1003,62 @@ function renderDead(){
   }
 }
 
-/* 제외 오퍼레이터 */
+/* 고정 · 제외 오퍼레이터 */
 function renderExcluded(){
   const chips = $("#exChips"); chips.innerHTML="";
-  $("#exCount").textContent = S.excluded.size + "명";
-  if(!S.excluded.size) chips.append(el("p","empty","제외된 오퍼레이터 없음"));
-  for(const i of S.excluded){
+  $("#exCount").textContent = `고정 ${S.locked.size} · 제외 ${S.excluded.size}`;
+  const chip = (i, kind)=>{
     const o = ALL[i];
-    const b = el("button","optag ex"); b.type="button";
+    const b = el("button","optag "+kind); b.type="button";
     b.append(el("span","g", GRADE[gradeOf(o)]));
     b.append(document.createTextNode(o.name));
     b.append(el("span","x","×"));
-    b.title = "클릭하면 제외 해제";
-    b.addEventListener("click", ()=>{ S.excluded.delete(i); afterExcludeChange(); });
-    chips.append(b);
-  }
+    b.title = (kind==="lock" ? "고정" : "제외") + " 해제";
+    b.addEventListener("click", ()=>{
+      (kind==="lock" ? S.locked : S.excluded).delete(i);
+      afterExcludeChange();
+    });
+    return b;
+  };
+  const group = (kind, title, set, hint)=>{
+    const box = el("div","exgroup");
+    const lab = el("p","exlabel "+kind);
+    lab.append(el("span","", title));
+    lab.append(el("span","rule"));
+    lab.append(el("span","cnt", String(set.size)));
+    box.append(lab);
+    if(!set.size){
+      const e = el("p","empty", hint);
+      e.style.padding="2px 0"; box.append(e);
+    } else {
+      const list = el("div","oplist");
+      for(const i of set) list.append(chip(i, kind));
+      box.append(list);
+    }
+    chips.append(box);
+  };
+  group("lock","고정 — 반드시 덱에 넣기", S.locked, "없음");
+  group("ex","제외 — 계산에서 빼기", S.excluded, "없음");
+
   const q = ($("#exSearch").value||"").trim().toLowerCase();
   const list = $("#exList"); list.innerHTML="";
   let shown=0;
   for(const o of poolOperators()){
-    if(S.excluded.has(o.i)) continue;
+    if(S.excluded.has(o.i) || S.locked.has(o.i)) continue;
     if(q && !o.name.toLowerCase().includes(q)) continue;
     if(shown++ > 300) break;
     const row = el("div","pickrow");
     row.append(el("span","pn", o.name));
     row.append(el("span","tg", o.tags.join("·")));
-    const b = el("button","tbtn","제외"); b.type="button";
-    b.addEventListener("click", ()=>{ S.excluded.add(o.i); afterExcludeChange(); });
-    row.append(b);
+    const tb = el("span","tierbtns");
+    const lk = el("button","tbtn lk","고정"); lk.type="button";
+    lk.disabled = S.locked.size >= S.deckSize;
+    lk.title = lk.disabled ? "덱 인원만큼 이미 고정했습니다" : "반드시 덱에 넣기";
+    lk.addEventListener("click", ()=>{ S.locked.add(o.i); afterExcludeChange(); });
+    const ex = el("button","tbtn","제외"); ex.type="button";
+    ex.addEventListener("click", ()=>{ S.excluded.add(o.i); afterExcludeChange(); });
+    tb.append(lk, ex);
+    row.append(tb);
     list.append(row);
   }
   if(!shown) list.append(el("p","empty","검색 결과 없음"));
@@ -918,7 +1071,7 @@ function syncHarmonyBox(){
 }
 function afterExcludeChange(){
   S.deck = S.deck.filter(i=>!S.excluded.has(i));
-  renderExcluded(); renderOpGrid(); renderBuild(); syncHarmonyBox();
+  renderExcluded(); renderOpGrid(); renderBuild(); syncHarmonyBox(); markStale();
 }
 
 /* 우선 맹약 */
@@ -932,12 +1085,13 @@ function renderFav(){
       const b = el("button","chip fav "+c.type); b.type="button";
       b.setAttribute("aria-pressed", on?"true":"false");
       b.title = c.desc||"";
+      b.append(covIcon(ci));
       b.append(document.createTextNode(c.name));
       b.append(el("span","thr", c.tiers.join("/")));
       b.addEventListener("click", ()=>{
         if(isCore) S.favCore = (S.favCore===ci ? -1 : ci);
         else { if(S.favAux.has(ci)) S.favAux.delete(ci); else S.favAux.add(ci); }
-        renderFav();
+        renderFav(); markStale();
       });
       host.append(b);
     }
@@ -1008,7 +1162,7 @@ function renderPicks(){
 function afterPickChange(){
   S.deck = S.deck.filter(i=> i<BASE.length || S.picked.includes(i));
   for(const i of [...S.excluded]) if(i>=BASE.length && !S.picked.includes(i)) S.excluded.delete(i);
-  renderPicks(); renderDead(); renderExcluded(); renderOpGrid(); renderBuild();
+  renderPicks(); renderDead(); renderExcluded(); renderOpGrid(); renderBuild(); markStale();
 }
 
 /* 결과 */
@@ -1016,11 +1170,14 @@ function synBadges(act){
   const box = el("div","syn");
   for(const a of act){
     const c = COVS[a.ci];
-    const b = el("span","badge "+c.type+(a.banned?" banned":"")+(a.apex?" apex":""));
+    const b = el("span","badge "+c.type+(a.banned?" banned":"")+(a.maxed?" maxed":"")+(a.apex?" apex":""));
+    b.append(covIcon(a.ci));
     b.append(document.createTextNode(c.name));
     b.append(el("span","n", String(a.n)));
-    b.append(el("span","lv", a.apex ? "MAX" : "LV"+(a.lv+1)));
-    b.title = (a.banned?"[밴된 맹약] ":"")+(a.apex?"[최대 단계] ":"")+(c.desc||"");
+    b.append(el("span","lv", a.maxed ? "MAX" : "LV"+(a.lv+1)));
+    if(a.over>0) b.append(el("span","ov", "+"+a.over));
+    b.title = (a.banned?"[밴된 맹약] ":"")+(a.maxed?"[최대 단계] ":"")
+            + (a.over>0?`[최종 단계보다 ${a.over}명 더 쌓임] `:"")+(c.desc||"");
     box.append(b);
   }
   return box;
@@ -1046,7 +1203,8 @@ function deckCard(r, rank){
     const g = gradeOf(o);
     const keyCore = o.tagIdx.find(t=>activeCore.has(t));
     const isHarmony = harmonyOn && o.tagIdx.includes(HARMONY_I);
-    const s = el("span","rop"+(o.pick?" ispick":"")+((keyCore!==undefined||isHarmony)?" corekey":""));
+    const s = el("span","rop"+(o.pick?" ispick":"")+(S.locked.has(o.i)?" locked":"")
+                 +((keyCore!==undefined||isHarmony)?" corekey":""));
     s.style.setProperty("--tc", `var(--t${g||5})`);
     s.append(el("span","g", GRADE[g]));
     s.append(el("span","rn", o.name));
@@ -1073,11 +1231,9 @@ function passFilter(r){
   const f=S.filters;
   if(f.apexOnly && !r.nApex) return false;
   if(f.min && r.nActive < f.min) return false;
-  if(f.coreCap && S.coreFocus>0 && r.nCore > S.coreFocus) return false;
-  if(f.requireFav){
-    if(S.favCore>=0 && !r.act.some(a=>a.ci===S.favCore)) return false;
-    for(const ci of S.favAux) if(!r.act.some(a=>a.ci===ci)) return false;
-  }
+  // 우선 맹약은 고르는 즉시 필수 조건이 된다 (별도 체크박스 없이)
+  if(S.favCore>=0 && !r.act.some(a=>a.ci===S.favCore)) return false;
+  for(const ci of S.favAux) if(!r.act.some(a=>a.ci===ci)) return false;
   return true;
 }
 function renderResults(meta){
@@ -1193,6 +1349,7 @@ function renderBuild(){
   for(const r of rows){
     const c = COVS[r.ci];
     const row = el("div","actrow "+c.type+(r.lv<0?" off":""));
+    row.append(covIcon(r.ci));
     const nm = el("span","nm", c.name);
     if(S.banned.has(r.ci)){ nm.style.textDecoration="line-through"; nm.style.textDecorationColor="var(--ban)"; }
     row.append(nm);
@@ -1287,37 +1444,48 @@ const setK = k=>{
   $("#k8").setAttribute("aria-pressed", k===8);
   $("#k9").setAttribute("aria-pressed", k===9);
   if(S.deck.length>k) S.deck.length=k;
-  renderBuild();
+  renderBuild(); markStale();
 };
 $("#k8").addEventListener("click", ()=>setK(8));
 $("#k9").addEventListener("click", ()=>setK(9));
-$("#clearFav").addEventListener("click", ()=>{ S.favCore=-1; S.favAux.clear(); renderFav(); });
+$("#clearFav").addEventListener("click", ()=>{ S.favCore=-1; S.favAux.clear(); renderFav(); markStale(); });
 const setCoreFocus = v=>{
   S.coreFocus = v;
   $("#cf1").setAttribute("aria-pressed", v===1);
   $("#cf2").setAttribute("aria-pressed", v===2);
   $("#cf0").setAttribute("aria-pressed", v===0);
-  $("#fCoreCap").disabled = (v===0);
   S.page=1; renderResults();
 };
 const setOpW = (v, id)=>{
   S.opW = v;
   for(const k of ["ow0","ow1","ow2"]) $("#"+k).setAttribute("aria-pressed", k===id);
+  markStale();
 };
+const setOverW = (v, id)=>{
+  S.overW = v;
+  for(const k of ["ov0","ov1","ov2"]) $("#"+k).setAttribute("aria-pressed", k===id);
+  markStale();
+};
+$("#ov0").addEventListener("click", ()=>setOverW(OVER_WEIGHT.none,"ov0"));
+$("#ov1").addEventListener("click", ()=>setOverW(OVER_WEIGHT.mid,"ov1"));
+$("#ov2").addEventListener("click", ()=>setOverW(OVER_WEIGHT.high,"ov2"));
 $("#ow0").addEventListener("click", ()=>setOpW(OP_WEIGHT.none,"ow0"));
 $("#ow1").addEventListener("click", ()=>setOpW(OP_WEIGHT.mid,"ow1"));
 $("#ow2").addEventListener("click", ()=>setOpW(OP_WEIGHT.high,"ow2"));
 $("#cf1").addEventListener("click", ()=>setCoreFocus(1));
 $("#cf2").addEventListener("click", ()=>setCoreFocus(2));
 $("#cf0").addEventListener("click", ()=>setCoreFocus(0));
-$("#bonusSel").addEventListener("change", e=>{S.bonus=+e.target.value; renderBuild();});
-$("#fCoreCap").addEventListener("change", e=>{S.filters.coreCap=e.target.checked; S.page=1; renderResults();});
-$("#fReqFav").addEventListener("change", e=>{S.filters.requireFav=e.target.checked; S.page=1; renderResults();});
+$("#bonusSel").addEventListener("change", e=>{S.bonus=+e.target.value; renderBuild(); markStale();});
 $("#fMin").addEventListener("change", e=>{S.filters.min=+e.target.value; S.page=1; renderResults();});
 $("#fApex").addEventListener("change", e=>{S.filters.apexOnly=e.target.checked; S.page=1; renderResults();});
 $("#perPage").addEventListener("change", e=>{S.perPage=+e.target.value; S.page=1; renderResults();});
 $("#pickSearch").addEventListener("input", renderPicks);
 $("#exSearch").addEventListener("input", renderExcluded);
+$("#clearOps").addEventListener("click", ()=>{
+  S.locked.clear(); S.excluded.clear();
+  $("#exSearch").value = "";
+  afterExcludeChange();
+});
 if(HARMONY_OPS.length){
   $("#exHarmonyWrap").classList.remove("hidden");
   $("#exHarmonyLabel").textContent = ALL[HARMONY_OPS[0]].name + " 제외";
@@ -1330,15 +1498,25 @@ $("#opSearch").addEventListener("input", renderOpGrid);
 $("#fGrade").addEventListener("change", renderOpGrid);
 $("#fTag").addEventListener("change", renderOpGrid);
 $("#clearDeck").addEventListener("click", ()=>{S.deck=[]; renderBuild(); renderOpGrid();});
+function markStale(){
+  const b = $("#runBtn");
+  if(!b) return;
+  b.classList.add("stale");
+  b.textContent = "조합 계산 ●";
+}
+function clearStale(){
+  const b = $("#runBtn");
+  b.classList.remove("stale");
+  b.textContent = "조합 계산";
+}
 $("#runBtn").addEventListener("click", ()=>{
   const b=$("#runBtn"); b.disabled=true; b.textContent="계산 중…";
-  setTimeout(()=>{ const m=search(); S.page=1; renderResults(m); b.disabled=false; b.textContent="조합 계산"; }, 15);
+  setTimeout(()=>{ const m=search(); S.page=1; renderResults(m); b.disabled=false; clearStale(); }, 15);
 });
 
 /* 초기화 */
 $("#seasonLabel").textContent = DATA.season;
 $("#footData").textContent = `${DATA.season} · 오퍼레이터 ${BASE.length}명 · 선발 ${PICKS.length}명 · 맹약 ${NC}개`;
-S.filters.coreCap = $("#fCoreCap").checked;
 fillSelects(); renderChips(); renderFav(); renderPicks(); renderExcluded(); renderBuild(); renderOpGrid(); setMode("ban");
 (function(){ const m = search(); renderResults(m); })();
 </script>

@@ -398,6 +398,28 @@ header{border-bottom:1px solid var(--line);background:var(--panel);position:stic
 .ftag.zero{border-color:var(--ban-line);color:var(--ban)}
 .fwarn{margin:8px 0 0;font-size:12px;line-height:1.5;color:var(--dim)}
 .fwarn b{color:var(--text)}
+.favchip{
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--line);border-left-width:3px;background:var(--panel);
+  padding:3px 4px 3px 9px;font-size:13px;
+}
+.favchip.core{border-left-color:var(--core-line)}
+.favchip.aux{border-left-color:var(--aux-line)}
+.favchip.core.on{border-color:var(--core-line);border-left-color:var(--core);background:var(--core-soft)}
+.favchip.aux.on{border-color:var(--aux-line);border-left-color:var(--aux);background:var(--aux-soft)}
+.favchip.core.on .fname{color:var(--core);font-weight:700}
+.favchip.aux.on .fname{color:var(--aux);font-weight:700}
+.fname{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.steps{display:inline-flex;gap:3px}
+.step{
+  font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;cursor:pointer;
+  min-width:24px;padding:3px 5px;background:var(--panel2);color:var(--faint);
+  border:1px solid var(--line);
+}
+.step:hover{border-color:var(--line-strong);color:var(--text)}
+.step:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.favchip.core .step[aria-pressed="true"]{background:var(--core);border-color:var(--core);color:#10141A}
+.favchip.aux .step[aria-pressed="true"]{background:var(--aux);border-color:var(--aux);color:#10141A}
 .pager{
   display:flex;align-items:center;gap:12px;flex-wrap:wrap;
   padding:12px 14px;border-top:1px solid var(--line);background:var(--panel2);
@@ -496,12 +518,6 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
         <div class="filters">
           <label for="fMin">최소 발동</label>
           <select id="fMin"><option value="0">전체</option><option value="4">4개+</option><option value="5">5개+</option><option value="6">6개+</option><option value="7">7개+</option></select>
-          <label for="fCoreLv">핵심 단계</label>
-          <select id="fCoreLv">
-            <option value="0">전체</option>
-            <option value="2" selected>2단계 이상</option>
-            <option value="max">MAX만</option>
-          </select>
           <label for="perPage">쪽당</label>
           <select id="perPage"><option value="10" selected>10개</option><option value="20">20개</option><option value="50">50개</option></select>
           <button class="btn primary" id="runBtn" style="margin-left:auto">조합 계산</button>
@@ -541,7 +557,7 @@ footer{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);font-si
           </div>
           <p class="condnote">값을 바꾼 뒤 <b>조합 계산</b>을 다시 눌러야 반영됩니다.</p>
         </div>
-        <div class="bandhead"><h3>우선 맹약</h3><span>고르면 <b>그 맹약이 발동한 조합만</b> 남고, 그 맹약을 깊게 미는 쪽이 위로 올라옵니다.</span></div>
+        <div class="bandhead"><h3>우선 맹약</h3><span>숫자를 누르면 <b>그 인원 이상인 조합만</b> 남습니다. 한 번 더 누르면 해제돼요.</span></div>
         <div class="favband">
           <div class="favrow">
             <span class="ck core">핵심 · 1개</span>
@@ -698,11 +714,12 @@ const S = {
   opW:OP_WEIGHT.mid,        // 오퍼레이터 티어를 점수에 반영하는 비중
   overW:OVER_WEIGHT.mid,    // 최종 단계 초과 중첩을 점수에 반영하는 비중
   locked:new Set(),         // 반드시 덱에 넣을 오퍼레이터
-  favCore:-1, favAux:new Set(),
+  favCore:-1, favCoreMin:0,     // 우선 핵심 맹약과 요구 인원
+  favAux:new Map(),             // 우선 부가 맹약 → 요구 인원
   picked:[null,null,null,null],   // 0,1 = 5티어 / 2,3 = 6티어
   deck:[], results:[], reco:null,
   page:1, perPage:10,
-  filters:{min:0, coreLv:"2"}
+  filters:{min:0}
 };
 const pickedTier = i => { const s = S.picked.indexOf(i); return s<0 ? 0 : (s<2 ? 5 : 6); };
 const gradeOf = o => o.pick ? pickedTier(o.i) : o.grade;
@@ -867,7 +884,7 @@ function search(){
 
   // 빔 폭. BEAM_MAIN 은 순수 점수 상위, BEAM_PER 는 "이 맹약을 가장 많이 쌓은 덱" 별로 따로 확보하는 자리.
   // 후자가 없으면 염국 9처럼 초반에 손해 보고 후반에 터지는 갈래가 중간에 잘려나간다.
-  const BEAM_MAIN = 900, BEAM_PER = 28;
+  const BEAM_MAIN = 600, BEAM_PER = 20;
   const PV = pool.map(o=> OP_VALUE[gradeOf(o)] ?? OP_VALUE[5]);
   const base = new Int8Array(NC);
   if(S.bonus>=0) base[S.bonus] += 1;
@@ -877,15 +894,10 @@ function search(){
   // 조화 오퍼가 풀에 남아 있을 때만 핵심 맹약 인원에 +1 여유를 준다
   const harmonySlack = (HARMONY_I>=0 && pool.some(o=>o.tagIdx.includes(HARMONY_I))) ? 1 : 0;
   const REQ = [];
-  if(S.favCore>=0){
-    // 화면에서 '2단계 이상'을 고르면 탐색도 거기에 맞춘다.
-    // 안 그러면 어차피 걸러질 1단계 조합을 찾느라 빔을 다 쓴다.
-    const t = COVS[S.favCore].tiers;
-    const idx = S.filters.coreLv==="max" ? t.length-1
-              : S.filters.coreLv==="2"   ? Math.min(1, t.length-1) : 0;
-    REQ.push([S.favCore, Math.max(1, t[idx]-harmonySlack)]);
-  }
-  for(const ci of S.favAux) REQ.push([ci, COVS[ci].tiers[0]]);
+  // 고른 인원 수를 그대로 탐색 조건으로 쓴다.
+  // 어차피 걸러질 조합을 찾느라 빔을 낭비하지 않도록.
+  if(S.favCore>=0) REQ.push([S.favCore, Math.max(1, S.favCoreMin - harmonySlack)]);
+  for(const [ci,min] of S.favAux) REQ.push([ci, min]);
 
   // 고정 오퍼를 미리 배치한 상태에서 탐색을 시작한다
   let seed = {c:base, last:-1, parent:null, op:-1, h:0, dom:(S.bonus>=0?S.bonus:0), ov:0};
@@ -955,7 +967,7 @@ function search(){
         arr.push(st);
       }
       const room = (dom === S.favCore) ? BEAM_PER*2 : BEAM_PER;
-      const perCount = Math.max(4, Math.ceil(room / Math.max(1, byCount.size)));
+      const perCount = Math.max(3, Math.ceil(room / Math.max(1, byCount.size)));
       for(const arr of byCount.values()){
         arr.sort((a,b)=> b.h-a.h);
         for(let i=0;i<Math.min(perCount, arr.length);i++) chosen.add(arr[i]);
@@ -971,8 +983,8 @@ function search(){
     if(REQ.length){
       const eff = applyHarmony(st.c);
       let ok = true;
-      if(S.favCore>=0 && tierOf(S.favCore, eff[S.favCore]) < 0) ok = false;
-      if(ok) for(const ci of S.favAux) if(tierOf(ci, eff[ci]) < 0){ ok = false; break; }
+      if(S.favCore>=0 && eff[S.favCore] < S.favCoreMin) ok = false;
+      if(ok) for(const [ci,min] of S.favAux) if(eff[ci] < min){ ok = false; break; }
       if(!ok) continue;
     }
     const sc = scoreOf(st.c) + S.opW * st.ov;
@@ -1156,34 +1168,41 @@ function renderFav(){
     for(const ci of idxs){
       const c = COVS[ci];
       if(c.offRoster) continue;   // 오퍼레이터 태그로 켜지지 않는 맹약은 지정 대상이 아니다
-      const on = isCore ? (S.favCore===ci) : S.favAux.has(ci);
-      const b = el("button","chip fav "+c.type); b.type="button";
-      b.setAttribute("aria-pressed", on?"true":"false");
-      b.title = c.desc||"";
-      b.append(covIcon(ci));
-      b.append(document.createTextNode(c.name));
-      b.append(el("span","thr", c.tiers.join("/")));
-      b.addEventListener("click", ()=>{
-        if(isCore) S.favCore = (S.favCore===ci ? -1 : ci);
-        else { if(S.favAux.has(ci)) S.favAux.delete(ci); else S.favAux.add(ci); }
-        renderFav(); markStale();
-      });
-      host.append(b);
+      const cur = isCore ? (S.favCore===ci ? S.favCoreMin : 0) : (S.favAux.get(ci) || 0);
+      const box = el("div","favchip "+c.type+(cur?" on":""));
+      box.title = c.desc || "";
+      const head = el("span","fname");
+      head.append(covIcon(ci));
+      head.append(document.createTextNode(c.name));
+      box.append(head);
+
+      const steps = el("span","steps");
+      for(const t of c.tiers){
+        const b = el("button","step", String(t)); b.type="button";
+        b.setAttribute("aria-pressed", cur===t ? "true":"false");
+        b.title = cur===t ? "해제" : `${c.name} ${t}명 이상으로 고정`;
+        b.addEventListener("click", ()=>{
+          if(isCore){
+            if(S.favCore===ci && S.favCoreMin===t){ S.favCore=-1; S.favCoreMin=0; }
+            else { S.favCore=ci; S.favCoreMin=t; }
+          } else {
+            if(S.favAux.get(ci)===t) S.favAux.delete(ci);
+            else S.favAux.set(ci, t);
+          }
+          renderFav(); markStale();
+        });
+        steps.append(b);
+      }
+      box.append(steps);
+      host.append(box);
     }
   };
   build($("#favCoreChips"), CORE_IDX, true);
   build($("#favAuxChips"), AUX_IDX, false);
-  // 단계 필터가 무엇을 기준으로 거르는지 선택지 안에 직접 적는다.
-  // (라벨만 바꾸면 다른 선택지가 없어진 것처럼 보인다)
-  const sel = $("#fCoreLv");
-  if(sel){
-    sel.title = S.favCore>=0
-      ? `${COVS[S.favCore].name} 맹약이 해당 단계에 도달한 조합만 남깁니다.\n우선 맹약을 해제하면 모든 핵심 맹약 기준으로 돌아갑니다.`
-      : "핵심 맹약 중 하나라도 해당 단계에 도달한 조합만 남깁니다.\n우선 핵심 맹약을 고르면 그 맹약 기준으로 바뀝니다.";
-  }
+
   const parts=[];
-  if(S.favCore>=0) parts.push(COVS[S.favCore].name);
-  for(const ci of S.favAux) parts.push(COVS[ci].name);
+  if(S.favCore>=0) parts.push(`${COVS[S.favCore].name} ${S.favCoreMin}명+`);
+  for(const [ci,min] of S.favAux) parts.push(`${COVS[ci].name} ${min}명+`);
   $("#favCount").textContent = parts.length ? parts.join(" · ") : "지정 없음";
 }
 
@@ -1310,33 +1329,32 @@ function deckCard(r, rank){
   card.append(d);
   return card;
 }
-// 핵심 단계 필터. 우선 핵심 맹약을 골랐다면 그 맹약만 본다.
-function coreLvPass(r, mode){
-  if(!mode || mode==="0") return true;
-  const cores = S.favCore>=0
-    ? r.act.filter(a=>a.ci===S.favCore)
-    : r.act.filter(a=>COVS[a.ci].type==="core");
-  if(!cores.length) return false;
-  return mode==="max" ? cores.some(a=>a.apex) : cores.some(a=>a.lv>=1);
+function favPass(r){
+  if(S.favCore>=0){
+    const a = r.act.find(x=>x.ci===S.favCore);
+    if(!a || a.n < S.favCoreMin) return false;
+  }
+  for(const [ci,min] of S.favAux){
+    const a = r.act.find(x=>x.ci===ci);
+    if(!a || a.n < min) return false;
+  }
+  return true;
 }
 function passFilter(r){
   const f=S.filters;
-  if(!coreLvPass(r, f.coreLv)) return false;
   if(f.min && r.nActive < f.min) return false;
-  // 우선 맹약은 고르는 즉시 필수 조건이 된다 (별도 체크박스 없이)
-  if(S.favCore>=0 && !r.act.some(a=>a.ci===S.favCore)) return false;
-  for(const ci of S.favAux) if(!r.act.some(a=>a.ci===ci)) return false;
+  if(!favPass(r)) return false;
   return true;
 }
 // 필터를 하나씩만 적용했을 때 몇 개가 남는지 — 어느 조건이 결과를 줄였는지 보여주기 위해
 function filterBreakdown(){
   const all = S.results, out = [];
-  const m = S.filters.coreLv;
-  if(m && m!=="0"){
-    const who = S.favCore>=0 ? COVS[S.favCore].name : "핵심";
-    out.push({label: who + (m==="max" ? " MAX만" : " 2단계 이상"),
-              n: all.filter(r=>coreLvPass(r, m)).length});
-  }
+  if(S.favCore>=0)
+    out.push({label:`${COVS[S.favCore].name} ${S.favCoreMin}명 이상`,
+              n: all.filter(r=>{const a=r.act.find(x=>x.ci===S.favCore); return a && a.n>=S.favCoreMin;}).length});
+  for(const [ci,min] of S.favAux)
+    out.push({label:`${COVS[ci].name} ${min}명 이상`,
+              n: all.filter(r=>{const a=r.act.find(x=>x.ci===ci); return a && a.n>=min;}).length});
   if(S.filters.min)
     out.push({label:`최소 발동 ${S.filters.min}개`, n: all.filter(r=>r.nActive>=S.filters.min).length});
   return out;
@@ -1345,15 +1363,18 @@ function renderFilterNote(shown){
   const host = $("#filterNote"); host.innerHTML="";
   const total = S.results.length;
   const parts = filterBreakdown();
-  if(!parts.length || shown === total) return;
+  if(!parts.length) return;
+  if(total > 0 && shown === total) return;   // 조건이 아무것도 걸러내지 않았으면 조용히
 
   const line = el("div","fline");
   const favNames = [];
   if(S.favCore>=0) favNames.push(COVS[S.favCore].name);
-  for(const ci of S.favAux) favNames.push(COVS[ci].name);
-  line.append(el("b","", favNames.length
-    ? `${favNames.join("·")} 조합 ${total.toLocaleString()}개 중 ${shown.toLocaleString()}개 표시`
-    : `${total.toLocaleString()}개 중 ${shown.toLocaleString()}개 표시`));
+  for(const ci of S.favAux.keys()) favNames.push(COVS[ci].name);
+  line.append(el("b","", total === 0
+    ? "조건을 만족하는 조합을 찾지 못했습니다"
+    : (favNames.length
+        ? `${favNames.join("·")} 조합 ${total.toLocaleString()}개 중 ${shown.toLocaleString()}개 표시`
+        : `${total.toLocaleString()}개 중 ${shown.toLocaleString()}개 표시`)));
   for(const p of parts){
     const t = el("span","ftag");
     t.append(document.createTextNode(p.label));
@@ -1365,15 +1386,22 @@ function renderFilterNote(shown){
   host.append(line);
 
   // 우선 핵심 맹약의 최종 단계가 덱 인원으로 도달 불가능한 경우
-  if(S.favCore>=0 && S.filters.coreLv !== "0"){
-    const t = COVS[S.favCore].tiers;
-    const need = S.filters.coreLv==="max" ? t[t.length-1] : t[1];
-    if(need && need > S.deckSize){
-      const w = el("p","fwarn");
-      w.innerHTML = `<b>${COVS[S.favCore].name}</b>은 ${S.filters.coreLv==="max" ? "최종 단계" : "2단계"}가 ${need}명이라 `
-        + `${S.deckSize}인 덱으로는 도달할 수 없습니다. 덱 인원을 ${need}로 올리거나 <b>핵심 단계</b>를 낮추세요.`;
-      host.append(w);
-    }
+  const over = [];
+  if(S.favCore>=0 && S.favCoreMin > S.deckSize) over.push([COVS[S.favCore].name, S.favCoreMin]);
+  for(const [ci,min] of S.favAux) if(min > S.deckSize) over.push([COVS[ci].name, min]);
+  let sum = (S.favCore>=0 ? S.favCoreMin : 0);
+  for(const [,min] of S.favAux) sum += min;
+  if(over.length){
+    const w = el("p","fwarn");
+    w.innerHTML = over.map(([nm,v])=>`<b>${nm} ${v}명</b>`).join(", ")
+      + ` — ${S.deckSize}인 덱으로는 채울 수 없는 인원입니다. 숫자를 낮추거나 덱 인원을 늘리세요.`;
+    host.append(w);
+  } else if(sum > S.deckSize){
+    const w = el("p","fwarn");
+    w.innerHTML = `고른 인원을 다 합치면 <b>${sum}명</b>인데 덱은 <b>${S.deckSize}명</b>입니다. `
+      + `두 맹약을 동시에 가진 오퍼레이터로 겹쳐야 하는데, 그런 오퍼가 없으면 조합이 나오지 않습니다. `
+      + `숫자를 낮추거나 덱 인원을 ${Math.min(9, sum)}로 올려보세요.`;
+    host.append(w);
   }
   if(shown <= 2){
     const w = el("p","fwarn");
@@ -1394,7 +1422,9 @@ function renderResults(meta){
   const rw=$("#recoWrap"), rl=$("#resultList");
   rw.innerHTML=""; rl.innerHTML="";
   if(!list.length){
-    const p = el("p","empty","조건에 맞는 조합이 없습니다. 필터를 완화하거나 밴을 조정해 보세요.");
+    const p = el("p","empty", (S.favCore>=0 || S.favAux.size)
+      ? "지정한 인원을 채우는 조합이 없습니다. 위 안내를 참고해 숫자를 낮춰보세요."
+      : "조건에 맞는 조합이 없습니다. 필터를 완화하거나 밴을 조정해 보세요.");
     p.style.padding="24px 14px"; rl.append(p); $("#pager").innerHTML=""; return;
   }
   const best = list[0];
@@ -1595,7 +1625,7 @@ const setK = k=>{
 };
 $("#k8").addEventListener("click", ()=>setK(8));
 $("#k9").addEventListener("click", ()=>setK(9));
-$("#clearFav").addEventListener("click", ()=>{ S.favCore=-1; S.favAux.clear(); renderFav(); markStale(); });
+$("#clearFav").addEventListener("click", ()=>{ S.favCore=-1; S.favCoreMin=0; S.favAux.clear(); renderFav(); markStale(); });
 const setCoreFocus = v=>{
   S.coreFocus = v;
   $("#cf1").setAttribute("aria-pressed", v===1);
@@ -1624,11 +1654,6 @@ $("#cf2").addEventListener("click", ()=>setCoreFocus(2));
 $("#cf0").addEventListener("click", ()=>setCoreFocus(0));
 $("#bonusSel").addEventListener("change", e=>{S.bonus=+e.target.value; renderBuild(); markStale();});
 $("#fMin").addEventListener("change", e=>{S.filters.min=+e.target.value; S.page=1; renderResults();});
-$("#fCoreLv").addEventListener("change", e=>{
-  S.filters.coreLv = e.target.value; S.page = 1;
-  // 우선 핵심 맹약이 있으면 이 값이 탐색 조건까지 바꾸므로 바로 다시 계산한다
-  if(S.favCore>=0) $("#runBtn").click(); else renderResults();
-});
 $("#perPage").addEventListener("change", e=>{S.perPage=+e.target.value; S.page=1; renderResults();});
 $("#pickSearch").addEventListener("input", renderPicks);
 $("#exSearch").addEventListener("input", renderExcluded);

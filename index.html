@@ -874,8 +874,17 @@ function search(){
 
   // 우선 맹약은 반드시 발동해야 하므로, 남은 자리로 도달할 수 없는 상태는 미리 버린다.
   // (핵심 맹약은 조화 보정으로 +1 될 수 있어 한 명 여유를 둔다)
+  // 조화 오퍼가 풀에 남아 있을 때만 핵심 맹약 인원에 +1 여유를 준다
+  const harmonySlack = (HARMONY_I>=0 && pool.some(o=>o.tagIdx.includes(HARMONY_I))) ? 1 : 0;
   const REQ = [];
-  if(S.favCore>=0) REQ.push([S.favCore, Math.max(1, COVS[S.favCore].tiers[0]-1)]);
+  if(S.favCore>=0){
+    // 화면에서 '2단계 이상'을 고르면 탐색도 거기에 맞춘다.
+    // 안 그러면 어차피 걸러질 1단계 조합을 찾느라 빔을 다 쓴다.
+    const t = COVS[S.favCore].tiers;
+    const idx = S.filters.coreLv==="max" ? t.length-1
+              : S.filters.coreLv==="2"   ? Math.min(1, t.length-1) : 0;
+    REQ.push([S.favCore, Math.max(1, t[idx]-harmonySlack)]);
+  }
   for(const ci of S.favAux) REQ.push([ci, COVS[ci].tiers[0]]);
 
   // 고정 오퍼를 미리 배치한 상태에서 탐색을 시작한다
@@ -937,8 +946,20 @@ function search(){
       g.push(s);
     }
     for(const [dom,g] of buckets){
-      g.sort((a,b)=> b.c[dom]-a.c[dom] || b.h-a.h);
-      for(let i=0;i<Math.min(BEAM_PER, g.length);i++) chosen.add(g[i]);
+      // 같은 맹약 안에서도 '인원 수'별로 나눠 남긴다.
+      // 많이 쌓은 순으로만 자르면 6명짜리 같은 중간 구간이 통째로 사라진다.
+      const byCount = new Map();
+      for(const st of g){
+        let arr = byCount.get(st.c[dom]);
+        if(!arr) byCount.set(st.c[dom], arr=[]);
+        arr.push(st);
+      }
+      const room = (dom === S.favCore) ? BEAM_PER*2 : BEAM_PER;
+      const perCount = Math.max(4, Math.ceil(room / Math.max(1, byCount.size)));
+      for(const arr of byCount.values()){
+        arr.sort((a,b)=> b.h-a.h);
+        for(let i=0;i<Math.min(perCount, arr.length);i++) chosen.add(arr[i]);
+      }
     }
     beam = Array.from(chosen);
   }
@@ -1603,7 +1624,11 @@ $("#cf2").addEventListener("click", ()=>setCoreFocus(2));
 $("#cf0").addEventListener("click", ()=>setCoreFocus(0));
 $("#bonusSel").addEventListener("change", e=>{S.bonus=+e.target.value; renderBuild(); markStale();});
 $("#fMin").addEventListener("change", e=>{S.filters.min=+e.target.value; S.page=1; renderResults();});
-$("#fCoreLv").addEventListener("change", e=>{S.filters.coreLv=e.target.value; S.page=1; renderResults();});
+$("#fCoreLv").addEventListener("change", e=>{
+  S.filters.coreLv = e.target.value; S.page = 1;
+  // 우선 핵심 맹약이 있으면 이 값이 탐색 조건까지 바꾸므로 바로 다시 계산한다
+  if(S.favCore>=0) $("#runBtn").click(); else renderResults();
+});
 $("#perPage").addEventListener("change", e=>{S.perPage=+e.target.value; S.page=1; renderResults();});
 $("#pickSearch").addEventListener("input", renderPicks);
 $("#exSearch").addEventListener("input", renderExcluded);
